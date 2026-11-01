@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financeiro | Controle Pessoal & Casal</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Firebase SDK (Compat Version) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+</head>
+<body class="bg-slate-200/50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 min-h-screen font-sans transition-colors duration-300">
+
+    <!-- TELA DE LOGIN -->
+    <div id="login-modal" class="fixed inset-0 bg-slate-950/90 z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-50 dark:bg-slate-800 p-8 rounded-2xl shadow-2xl border border-slate-300/70 dark:border-slate-700 max-w-md w-full">
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 mb-3">
+                    <i class="fa-solid fa-wallet text-3xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Controle Financeiro</h2>
+                <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Entre com suas credenciais de acesso</p>
+            </div>
+            
+            <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Usuário</label>
+                    <input type="text" id="login-user" class="w-full bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-3 text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 uppercase" placeholder="MATHEUS ou RHAUANE" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Senha</label>
+                    <input type="password" id="login-pass" class="w-full bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-3 text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500" placeholder="••••••" required>
+                </div>
+                <div id="login-error" class="text-rose-500 text-xs text-center hidden">Usuário ou senha incorretos.</div>
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 rounded-lg transition-all duration-200 shadow-lg shadow-emerald-600/20">
+                    Acessar Painel
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- PAINEL PRINCIPAL -->
+    <div id="app" class="hidden min-h-screen flex flex-col md:flex-row">
+        
+        <!-- SIDEBAR -->
+        <aside class="w-full md:w-64 bg-slate-50 dark:bg-slate-800 border-r border-slate-300/60 dark:border-slate-700/50 p-6 flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between mb-8">
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-chart-pie text-emerald-600 dark:text-emerald-400 text-2xl"></i>
+                        <span class="font-bold text-lg text-slate-900 dark:text-white">Finanças</span>
+                    </div>
+                    <!-- Botão Dark/Light Mode -->
+                    <button onclick="toggleTheme()" class="p-2 rounded-lg bg-slate-200/70 dark:bg-slate-700/50 hover:bg-slate-300/70 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition">
+                        <i id="theme-icon" class="fa-solid fa-sun"></i>
+                    </button>
+                </div>
+
+                <!-- Perfil do Usuário Logado -->
+                <div class="bg-slate-200/50 dark:bg-slate-900/60 p-3 rounded-xl border border-slate-300/60 dark:border-slate-700/50 mb-6 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div id="user-avatar" class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-white bg-blue-600">
+                            M
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Conectado como</p>
+                            <p id="logged-username" class="font-semibold text-slate-900 dark:text-white text-sm">MATHEUS</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NAVEGAÇÃO -->
+                <nav class="space-y-2">
+                    <button onclick="switchTab('dre')" id="nav-dre" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-slate-700/50 text-left transition">
+                        <i class="fa-solid fa-list-check w-5"></i> DRE Mensal
+                    </button>
+                    <button onclick="switchTab('dash')" id="nav-dash" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-slate-700/30 text-left transition">
+                        <i class="fa-solid fa-chart-line w-5"></i> Dashboard
+                    </button>
+                    <button onclick="switchTab('invest')" id="nav-invest" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-slate-700/30 text-left transition">
+                        <i class="fa-solid fa-piggy-bank w-5"></i> Investimentos CDB
+                    </button>
+                    <button onclick="openCardManagerModal()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-slate-700/30 text-left transition mt-4">
+                        <i class="fa-solid fa-credit-card w-5"></i> Meus Cartões
+                    </button>
+                </nav>
+            </div>
+
+            <button onclick="logout()" class="flex items-center gap-2 text-slate-500 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400 text-sm mt-8 transition">
+                <i class="fa-solid fa-right-from-bracket"></i> Sair do Sistema
+            </button>
+        </aside>
+
+        <!-- CONTEÚDO PRINCIPAL -->
+        <main class="flex-1 p-4 md:p-8 overflow-y-auto">
+            
+            <!-- CONTROLES SUPERIORES -->
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-900 dark:text-white" id="page-title">DRE Financeiro</h1>
+                    <p class="text-sm font-semibold text-emerald-600 dark:text-emerald-400 mt-0.5 capitalize" id="formatted-selected-month">Janeiro de 2026</p>
+                </div>
+                
+                <div class="flex flex-wrap items-center gap-3">
+                    <!-- Seleção de Mês / Ano -->
+                    <input type="month" id="selected-month" onchange="updateViews()" class="capitalize bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white text-sm rounded-lg p-2.5 outline-none focus:border-emerald-500 shadow-sm">
+                    
+                    <!-- Filtro por Usuário -->
+                    <select id="filter-user" onchange="updateViews()" class="bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white text-sm rounded-lg p-2.5 outline-none focus:border-emerald-500 shadow-sm">
+                        <option value="ALL">CASAL (Consolidado)</option>
+                        <option value="MATHEUS">MATHEUS</option>
+                        <option value="RHAUANE">RHAUANE</option>
+                    </select>
+
+                    <!-- Botão Novo Lançamento -->
+                    <button onclick="openModal()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold px-4 py-2.5 rounded-lg flex items-center gap-2 transition shadow-lg shadow-emerald-600/20">
+                        <i class="fa-solid fa-plus"></i> Novo Lançamento
+                    </button>
+                </div>
+            </div>
+
+            <!-- CARDS DE RESUMO (KPIs) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                <div class="bg-slate-50 dark:bg-slate-800/80 border border-slate-300/60 dark:border-slate-700/60 rounded-2xl p-5 shadow-sm">
+                    <p class="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold">Total Entradas</p>
+                    <p class="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-2" id="kpi-entradas">R$ 0,00</p>
+                </div>
+                <div class="bg-slate-50 dark:bg-slate-800/80 border border-slate-300/60 dark:border-slate-700/60 rounded-2xl p-5 shadow-sm">
+                    <p class="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold">Saídas Essenciais</p>
+                    <p class="text-2xl font-bold text-amber-600 dark:text-amber-400 mt-2" id="kpi-essenciais">R$ 0,00</p>
+                </div>
+                <div class="bg-slate-50 dark:bg-slate-800/80 border border-slate-300/60 dark:border-slate-700/60 rounded-2xl p-5 shadow-sm">
+                    <p class="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold">Saídas Não Essenciais</p>
+                    <p class="text-2xl font-bold text-rose-600 dark:text-rose-400 mt-2" id="kpi-nao-essenciais">R$ 0,00</p>
+                </div>
+                <div class="bg-slate-50 dark:bg-slate-800/80 border border-slate-300/60 dark:border-slate-700/60 rounded-2xl p-5 shadow-sm">
+                    <p class="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold">Resultado Líquido Mês</p>
+                    <p class="text-2xl font-bold text-slate-900 dark:text-white mt-2" id="kpi-resultado">R$ 0,00</p>
+                </div>
+            </div>
+
+            <!-- TAB 1: DRE MENSAL -->
+            <section id="tab-dre" class="space-y-6">
+                <div class="bg-slate-50 dark:bg-slate-800/60 border border-slate-300/60 dark:border-slate-700/50 rounded-2xl p-6 shadow-sm">
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-bars-staggered text-emerald-600 dark:text-emerald-400"></i> Lançamentos do Mês
+                    </h3>
+                    
+                    <div class="overflow-x-auto mb-8">
+                        <table class="w-full text-left text-sm text-slate-700 dark:text-slate-300">
+                            <thead class="bg-slate-200/60 dark:bg-slate-900/50 text-slate-500 dark:text-slate-400 uppercase text-xs">
+                                <tr>
+                                    <th class="p-3">Data</th>
+                                    <th class="p-3">Descrição</th>
+                                    <th class="p-3">Classificação</th>
+                                    <th class="p-3">Método</th>
+                                    <th class="p-3">Usuário</th>
+                                    <th class="p-3 text-right">Valor</th>
+                                    <th class="p-3 text-center">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dre-table-body" class="divide-y divide-slate-200 dark:divide-slate-700/40">
+                                <!-- Preenchido por JS -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- SUBTOTAIS E DEMONSTRATIVO DE SUBTRAÇÕES -->
+                    <div class="border-t border-slate-300/60 dark:border-slate-700 pt-6">
+                        <h4 class="text-md font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-calculator text-blue-500"></i> Fechamento do Mês
+                        </h4>
+                        <div class="bg-slate-200/40 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-300/60 dark:border-slate-700 space-y-3 max-w-2xl text-sm">
+                            <div class="flex justify-between items-center text-emerald-600 dark:text-emerald-400">
+                                <span>(+) Total de Ganhos / Entradas</span>
+                                <span class="font-bold" id="dre-calc-ganhos">R$ 0,00</span>
+                            </div>
+                            <div class="flex justify-between items-center text-amber-600 dark:text-amber-400">
+                                <span>(-) Despesas Essenciais</span>
+                                <span class="font-bold" id="dre-calc-essenciais">R$ 0,00</span>
+                            </div>
+                            <div class="flex justify-between items-center pt-2 border-t border-slate-300/60 dark:border-slate-800 font-semibold text-slate-800 dark:text-slate-200">
+                                <span>(=) Subtotal após Essenciais</span>
+                                <span id="dre-calc-subtotal1">R$ 0,00</span>
+                            </div>
+                            <div class="flex justify-between items-center text-rose-600 dark:text-rose-400">
+                                <span>(-) Despesas Não Essenciais</span>
+                                <span class="font-bold" id="dre-calc-nao-essenciais">R$ 0,00</span>
+                            </div>
+                            <div class="flex justify-between items-center pt-2 border-t border-slate-300/60 dark:border-slate-800 font-bold text-slate-900 dark:text-white text-base">
+                                <span>(=) Resultado Líquido do Mês</span>
+                                <span id="dre-calc-resultado">R$ 0,00</span>
+                            </div>
+                            <div class="flex justify-between items-center text-slate-500 dark:text-slate-400 pt-1 text-xs">
+                                <span>(+) Saldo Carregado do Mês Anterior</span>
+                                <span id="dre-calc-anterior">R$ 0,00</span>
+                            </div>
+                            <div class="flex justify-between items-center pt-2 border-t border-slate-300 dark:border-slate-700 font-bold text-blue-600 dark:text-blue-400 text-base">
+                                <span>(=) Saldo Acumulado Final</span>
+                                <span id="dre-calc-acumulado">R$ 0,00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: DASHBOARD -->
+            <section id="tab-dash" class="hidden space-y-6">
+                <!-- Gráfico de Evolução (Linha do Tempo) -->
+                <div class="bg-slate-50 dark:bg-slate-800/60 border border-slate-300/60 dark:border-slate-700/50 rounded-2xl p-6 shadow-sm">
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-chart-column text-emerald-500"></i> Evolução da Linha do Tempo
+                    </h3>
+                    <div class="h-72">
+                        <canvas id="chart-timeline-12m"></canvas>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Gráfico Distribuição de Gastos -->
+                    <div class="bg-slate-50 dark:bg-slate-800/60 border border-slate-300/60 dark:border-slate-700/50 rounded-2xl p-6 shadow-sm">
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4">Distribuição de Gastos</h3>
+                        <div class="h-64 flex justify-center">
+                            <canvas id="chart-503020"></canvas>
+                        </div>
+                    </div>
+                    <!-- Gráfico Maiores Categorias de Gastos -->
+                    <div class="bg-slate-50 dark:bg-slate-800/60 border border-slate-300/60 dark:border-slate-700/50 rounded-2xl p-6 shadow-sm">
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4">Maiores Despesas do Mês</h3>
+                        <div class="h-64 flex justify-center">
+                            <canvas id="chart-top-expenses"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: INVESTIMENTOS (RENDA FIXA / CDB) -->
+            <section id="tab-invest" class="hidden space-y-6">
+                <div class="bg-slate-50 dark:bg-slate-800/60 border border-slate-300/60 dark:border-slate-700/50 rounded-2xl p-6 shadow-sm">
+                    <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6">
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900 dark:text-white">Aplicações em Renda Fixa / CDB</h3>
+                            <p class="text-sm text-slate-500 dark:text-slate-400">Evolução baseada em aportes, resgates agendados e projeções</p>
+                        </div>
+                        
+                        <div class="flex flex-wrap items-center gap-2">
+                            <!-- BOTÃO DE EXPANSÃO / OCULTAÇÃO DO INVESTIMENTO INICIAL -->
+                            <button onclick="toggleInitialCdbFields()" class="bg-slate-200/60 dark:bg-slate-900/60 hover:bg-slate-300/60 dark:hover:bg-slate-700/60 p-2.5 rounded-xl border border-slate-300/60 dark:border-slate-700 text-xs font-medium text-slate-700 dark:text-slate-300 flex items-center gap-2 transition shadow-sm">
+                                <i class="fa-solid fa-sliders text-emerald-600 dark:text-emerald-400"></i>
+                                <span>Saldo Inicial</span>
+                                <i id="cdb-toggle-icon" class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+                            </button>
+
+                            <!-- CAMPOS DE INVESTIMENTO INICIAL (OCULTOS POR PADRÃO) -->
+                            <div id="cdb-initial-fields" class="hidden flex flex-wrap items-center gap-2">
+                                <div class="bg-slate-200/60 dark:bg-slate-900/60 p-2.5 rounded-xl border border-slate-300/60 dark:border-slate-700 flex items-center gap-2">
+                                    <label class="text-xs font-semibold text-slate-600 dark:text-slate-400">Saldo Inicial (R$):</label>
+                                    <input type="number" step="0.01" id="cdb-initial-amount" value="0" onchange="renderInvestChart()" class="w-24 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded px-2 py-1 text-xs text-slate-900 dark:text-white text-right font-bold focus:border-emerald-500" placeholder="0,00">
+                                </div>
+
+                                <div class="bg-slate-200/60 dark:bg-slate-900/60 p-2.5 rounded-xl border border-slate-300/60 dark:border-slate-700 flex items-center gap-2">
+                                    <label class="text-xs font-semibold text-slate-600 dark:text-slate-400">Data Inicial:</label>
+                                    <input type="month" id="cdb-initial-date" value="2026-01" onchange="renderInvestChart()" class="capitalize bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded px-2 py-1 text-xs text-slate-900 dark:text-white font-medium focus:border-emerald-500">
+                                </div>
+                            </div>
+
+                            <!-- Seletor do Período de Análise -->
+                            <div class="bg-slate-200/60 dark:bg-slate-900/60 p-2.5 rounded-xl border border-slate-300/60 dark:border-slate-700 flex items-center gap-2">
+                                <label class="text-xs font-semibold text-slate-600 dark:text-slate-400">Período:</label>
+                                <select id="invest-range" onchange="renderInvestChart()" class="bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs rounded p-1 text-slate-900 dark:text-white font-medium">
+                                    <option value="6M_PAST">Últimos 6 Meses</option>
+                                    <option value="12M_PAST">Últimos 12 Meses</option>
+                                    <option value="6M_FUTURE">Próximos 6 Meses (Projeção)</option>
+                                    <option value="12M_FUTURE" selected>Próximos 12 Meses (Projeção)</option>
+                                </select>
+                            </div>
+
+                            <!-- Taxa de Rendimento do CDB -->
+                            <div class="bg-slate-200/60 dark:bg-slate-900/60 p-2.5 rounded-xl border border-slate-300/60 dark:border-slate-700 flex items-center gap-2">
+                                <label class="text-xs font-semibold text-slate-600 dark:text-slate-400">Taxa CDB (% a.a.):</label>
+                                <input type="number" step="0.01" id="cdb-rate" value="10.75" onchange="renderInvestChart()" class="w-16 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded px-2 py-1 text-xs text-slate-900 dark:text-white text-right font-bold focus:border-emerald-500">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                        <div class="bg-slate-200/40 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-300/60 dark:border-slate-700/50">
+                            <span class="text-xs text-slate-500 dark:text-slate-400">Saldo Atual Aplicado (CDB)</span>
+                            <p class="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1" id="cdb-total-balance">R$ 0,00</p>
+                        </div>
+                        <div class="bg-slate-200/40 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-300/60 dark:border-slate-700/50">
+                            <span class="text-xs text-slate-500 dark:text-slate-400">Estimativa Rendimento Mensal</span>
+                            <p class="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-1" id="cdb-monthly-yield">R$ 0,00</p>
+                        </div>
+                        <div class="bg-slate-200/40 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-300/60 dark:border-slate-700/50">
+                            <span class="text-xs text-slate-500 dark:text-slate-400" id="cdb-projected-label">Projeção Saldo em 12 Meses</span>
+                            <p class="text-2xl font-bold text-purple-600 dark:text-purple-400 mt-1" id="cdb-projected-val">R$ 0,00</p>
+                        </div>
+                    </div>
+
+                    <div class="h-72">
+                        <canvas id="chart-invest-evolution"></canvas>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- MODAL GERENCIADOR DE CARTÕES DE CRÉDITO -->
+    <div id="card-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-50 dark:bg-slate-800 border border-slate-300/70 dark:border-slate-700 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-700 pb-3">
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white">Meus Cartões de Crédito</h3>
+                <button onclick="closeCardManagerModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+
+            <!-- Formulário Novo Cartão -->
+            <form onsubmit="handleSaveCard(event)" class="space-y-3 bg-slate-200/50 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-300/60 dark:border-slate-700">
+                <p class="text-xs font-semibold text-slate-600 dark:text-slate-400">Cadastrar Novo Cartão</p>
+                <div>
+                    <input type="text" id="card-nickname" placeholder="Apelido do Cartão (Ex: Nubank Roxo, Itaú Black)" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg p-2 text-slate-900 dark:text-white text-xs">
+                </div>
+                <div class="flex gap-2">
+                    <div class="flex-1">
+                        <label class="block text-[10px] text-slate-500 mb-1">Dia Fechamento Fatura</label>
+                        <input type="number" id="card-closing-day" min="1" max="31" placeholder="Ex: 4" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg p-2 text-slate-900 dark:text-white text-xs">
+                    </div>
+                    <button type="submit" class="self-end bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
+                        Adicionar
+                    </button>
+                </div>
+            </form>
+
+            <!-- Lista de Cartões Cadastrados -->
+            <div>
+                <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Cartões Cadastrados</p>
+                <div id="cards-list" class="space-y-2 max-h-48 overflow-y-auto">
+                    <!-- Preenchido por JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL NOVO/EDITAR LANÇAMENTO -->
+    <div id="entry-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-50 dark:bg-slate-800 border border-slate-300/70 dark:border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-700 pb-3">
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white" id="modal-title">Novo Lançamento</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+
+            <form id="entry-form" onsubmit="handleSaveEntry(event)" class="space-y-4">
+                <input type="hidden" id="editing-id" value="">
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Tipo</label>
+                        <select id="entry-type" onchange="updateCategories()" class="w-full bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg p-2.5 text-slate-900 dark:text-white text-sm">
+                            <option value="ENTRADA">Entrada (Ganho)</option>
+                            <option value="SAIDA">Saída (Gasto)</option>
+                            <option value="INVESTIMENTO">Aporte CDB / Investimento</option>
+                            <option value="RESGATE">Resgate CDB / Investimento</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Classificação</label>
+                        <select id="entry-category" class="w-full bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg p-2.5 text-slate-900 dark:text-white text-sm">
+                            <!-- Preenchido por JS -->
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Descrição / Especificação</label>
+                    <input type="text" id="entry-desc" placeholder="Ex: Supermercado, Salário, Internet, CDB Itaú" required class="w-full bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg p-2.5 text-slate-900 dark:text-white text-sm">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Valor (R$)</label>
+                        <input type="number" step="0.01" id="entry-amount" placeholder="0,00" required class="w-full bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg p-2.5 text-slate-900 dark:text-white text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Data do Registro</label>
+                        <input type="date" id="entry-date" required class="w-full bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg p-2.5 text-slate-900 dark:text-white text-sm">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Método de Pagamento</label>
+                        <select id="entry-method" onchange="toggleCreditOptions()" class="w-full bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg p-2.5 text-slate-900 dark:text-white text-sm">
+                            <!-- Preenchido dinamicamente por JS conforme o tipo selecionado -->
+                        </select>
+                    </div>
+                    <div id="credit-card-select-container" class="hidden">
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Selecione o Cartão</label>
+                        <select id="entry-card-id" class="w-full bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg p-2.5 text-slate-900 dark:text-white text-sm">
+                            <!-- Populado dinamicamente -->
+                        </select>
+                    </div>
+                </div>
+
+                <div id="installments-container" class="hidden">
+                    <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Nº de Parcelas</label>
+                    <input type="number" id="entry-installments" min="1" max="48" value="1" class="w-full bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg p-2.5 text-slate-900 dark:text-white text-sm">
+                </div>
+
+                <div class="bg-slate-200/50 dark:bg-slate-900/40 p-3 rounded-lg border border-slate-300/60 dark:border-slate-700/40 text-xs text-slate-500 dark:text-slate-400">
+                    <i class="fa-solid fa-circle-info text-blue-500"></i> Registro atribuído a: <strong id="entry-author-display" class="text-slate-800 dark:text-white">MATHEUS</strong>
+                </div>
+
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 rounded-lg transition shadow-lg shadow-emerald-600/20">
+                    Salvar Registro
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT -->
+    <script>
+        // ============================================================
+        // CONFIGURAÇÃO DO FIREBASE (Substitua com suas chaves do Google)
+        // ============================================================
+        const firebaseConfig = {
+            apiKey: "SUA_API_KEY_AQUI",
+            authDomain: "SEU_PROJETO.firebaseapp.com",
+            projectId: "SEU_PROJETO",
+            storageBucket: "SEU_PROJETO.appspot.com",
+            messagingSenderId: "1234567890",
+            appId: "1:1234567890:web:1234567890"
+        };
+
+        // Inicializa o Firebase
+        let db = null;
+        if (firebaseConfig.apiKey !== "SUA_API_KEY_AQUI") {
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.firestore();
+        }
+
+        let currentUser = null;
+        let creditCards = [];
+        let transactions = [];
+
+        // ESCUTAR BANCO DE DADOS EM TEMPO REAL
+        function initFirebaseListeners() {
+            if (!db) return;
+
+            // Escuta mudanças nos Cartões de Crédito
+            db.collection('creditCards').onSnapshot(snapshot => {
+                creditCards = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                updateCreditCardsDropdown();
+                if (!document.getElementById('card-modal').classList.contains('hidden')) {
+                    renderCardsList();
+                }
+            }, err => console.error("Erro ao ouvir cartões:", err));
+
+            // Escuta mudanças nos Lançamentos Financeiros
+            db.collection('transactions').onSnapshot(snapshot => {
+                transactions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                updateViews();
+            }, err => console.error("Erro ao ouvir lançamentos:", err));
+        }
+
+        // Alternar exibição dos campos de saldo inicial do CDB
+        function toggleInitialCdbFields() {
+            const fieldsContainer = document.getElementById('cdb-initial-fields');
+            const icon = document.getElementById('cdb-toggle-icon');
+            fieldsContainer.classList.toggle('hidden');
+            if (fieldsContainer.classList.contains('hidden')) {
+                icon.className = 'fa-solid fa-chevron-down text-[10px] text-slate-400';
+            } else {
+                icon.className = 'fa-solid fa-chevron-up text-[10px] text-slate-400';
+            }
+        }
+
+        // Formatação Numérica com 2 Casas Decimais
+        function formatCurrency(val) {
+            return `R$ ${Number(val || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        }
+
+        function formatDateBR(dateStr) {
+            if (!dateStr) return '';
+            const parts = dateStr.split('-');
+            if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+            return dateStr;
+        }
+
+        // Formatação de Mês com Primeira Letra Maiúscula (Ex: Janeiro de 2026)
+        function formatMonthCapitalized(monthStr) {
+            if (!monthStr) return '';
+            const [year, month] = monthStr.split('-').map(Number);
+            const date = new Date(year, month - 1, 1);
+            const monthName = date.toLocaleString('pt-BR', { month: 'long' });
+            const capitalizedMonth = monthName.charAt(0).toUpperCase() + monthName.slice(1);
+            return `${capitalizedMonth} de ${year}`;
+        }
+
+        function getCurrentMonthStr() {
+            const d = new Date();
+            const yyyy = d.getFullYear();
+            const mm = String(d.getMonth() + 1).padStart(2, '0');
+            return `${yyyy}-${mm}`;
+        }
+
+        // LOGIN
+        function handleLogin(e) {
+            e.preventDefault();
+            const u = document.getElementById('login-user').value.toUpperCase().trim();
+            const p = document.getElementById('login-pass').value.trim();
+
+            if ((u === 'MATHEUS' && p === 'mat02') || (u === 'RHAUANE' && p === 'rhauane02')) {
+                currentUser = u;
+                document.getElementById('login-modal').classList.add('hidden');
+                document.getElementById('app').classList.remove('hidden');
+                document.getElementById('logged-username').innerText = u;
+                document.getElementById('user-avatar').innerText = u.charAt(0);
+                document.getElementById('user-avatar').className = `w-10 h-10 rounded-full flex items-center justify-center font-bold text-white ${u === 'MATHEUS' ? 'bg-blue-600' : 'bg-purple-600'}`;
+                
+                const currentMonth = getCurrentMonthStr();
+                document.getElementById('selected-month').value = currentMonth;
+                document.getElementById('entry-date').value = new Date().toISOString().split('T')[0];
+
+                updateCategories();
+                initFirebaseListeners();
+                updateViews();
+            } else {
+                document.getElementById('login-error').classList.remove('hidden');
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            document.getElementById('app').classList.add('hidden');
+            document.getElementById('login-modal').classList.remove('hidden');
+        }
+
+        // ALTERNÂNCIA DE TEMA
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                icon.className = 'fa-solid fa-moon';
+            } else {
+                html.classList.add('dark');
+                icon.className = 'fa-solid fa-sun';
+            }
+        }
+
+        // TABS
+        function switchTab(tab) {
+            ['dre', 'dash', 'invest'].forEach(t => {
+                document.getElementById(`tab-${t}`).classList.add('hidden');
+                document.getElementById(`nav-${t}`).className = 'w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-slate-700/30 text-left transition';
+            });
+            document.getElementById(`tab-${tab}`).classList.remove('hidden');
+            document.getElementById(`nav-${tab}`).className = 'w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-slate-700/50 text-left transition';
+            
+            if(tab === 'dash') renderDashboardCharts();
+            if(tab === 'invest') renderInvestChart();
+        }
+
+        // GERENCIAMENTO DE CARTÕES DE CRÉDITO
+        function openCardManagerModal() {
+            renderCardsList();
+            document.getElementById('card-modal').classList.remove('hidden');
+        }
+
+        function closeCardManagerModal() {
+            document.getElementById('card-modal').classList.add('hidden');
+        }
+
+        function renderCardsList() {
+            const container = document.getElementById('cards-list');
+            container.innerHTML = '';
+
+            const userCards = creditCards.filter(c => c.user === currentUser);
+            if (userCards.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-400 text-center py-2">Nenhum cartão cadastrado.</p>`;
+                return;
+            }
+
+            userCards.forEach(c => {
+                container.innerHTML += `
+                    <div class="flex items-center justify-between bg-slate-200/60 dark:bg-slate-900 p-2.5 rounded-lg text-xs">
+                        <div>
+                            <p class="font-bold text-slate-800 dark:text-white">${c.nickname}</p>
+                            <p class="text-[10px] text-slate-500">Fecha dia: ${c.closingDay}</p>
+                        </div>
+                        <button onclick="deleteCard('${c.id}')" class="text-rose-500 hover:text-rose-700 p-1"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                `;
+            });
+        }
+
+        async function handleSaveCard(e) {
+            e.preventDefault();
+            const nickname = document.getElementById('card-nickname').value.trim();
+            const closingDay = parseInt(document.getElementById('card-closing-day').value);
+
+            if (!nickname || !closingDay) return;
+
+            if (db) {
+                await db.collection('creditCards').add({
+                    user: currentUser,
+                    nickname: nickname,
+                    closingDay: closingDay,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            } else {
+                creditCards.push({ id: String(Date.now()), user: currentUser, nickname, closingDay });
+                renderCardsList();
+                updateCreditCardsDropdown();
+            }
+
+            document.getElementById('card-nickname').value = '';
+            document.getElementById('card-closing-day').value = '';
+        }
+
+        async function deleteCard(id) {
+            if(confirm("Deseja remover este cartão?")) {
+                if (db) {
+                    await db.collection('creditCards').doc(id).delete();
+                } else {
+                    creditCards = creditCards.filter(c => c.id !== id);
+                    renderCardsList();
+                    updateCreditCardsDropdown();
+                }
+            }
+        }
+
+        function updateCreditCardsDropdown() {
+            const select = document.getElementById('entry-card-id');
+            select.innerHTML = '';
+
+            const userCards = creditCards.filter(c => c.user === currentUser);
+            if (userCards.length === 0) {
+                select.innerHTML = `<option value="">Nenhum cartão cadastrado</option>`;
+                return;
+            }
+
+            userCards.forEach(c => {
+                select.innerHTML += `<option value="${c.id}">${c.nickname} (Fecha dia ${c.closingDay})</option>`;
+            });
+        }
+
+        // MODAL LANÇAMENTO
+        function openModal(editId = null) {
+            document.getElementById('entry-author-display').innerText = currentUser;
+            document.getElementById('editing-id').value = editId || '';
+            updateCreditCardsDropdown();
+
+            if (editId) {
+                const item = transactions.find(t => String(t.id) === String(editId));
+                if (item) {
+                    document.getElementById('modal-title').innerText = 'Editar Lançamento';
+                    document.getElementById('entry-type').value = item.type;
+                    updateCategories();
+                    document.getElementById('entry-category').value = item.category;
+                    document.getElementById('entry-desc').value = item.desc;
+                    document.getElementById('entry-amount').value = item.amount;
+                    document.getElementById('entry-date').value = item.date;
+                    document.getElementById('entry-method').value = item.method;
+                    toggleCreditOptions();
+                    if(item.cardId) document.getElementById('entry-card-id').value = item.cardId;
+                }
+            } else {
+                document.getElementById('modal-title').innerText = 'Novo Lançamento';
+                document.getElementById('entry-form').reset();
+                document.getElementById('entry-date').value = new Date().toISOString().split('T')[0];
+                updateCategories();
+                toggleCreditOptions();
+            }
+
+            document.getElementById('entry-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('entry-modal').classList.add('hidden');
+        }
+
+        function updateCategories() {
+            const type = document.getElementById('entry-type').value;
+            const catSelect = document.getElementById('entry-category');
+            const methodSelect = document.getElementById('entry-method');
+            const prevMethod = methodSelect.value;
+
+            catSelect.innerHTML = '';
+
+            if (type === 'ENTRADA') {
+                catSelect.innerHTML = `<option value="Receita">Receita / Salário / Extra</option>`;
+            } else if (type === 'SAIDA') {
+                catSelect.innerHTML = `
+                    <option value="Saída Essencial">Saída Essencial</option>
+                    <option value="Saída Não Essencial">Saída Não Essencial</option>
+                `;
+            } else if (type === 'INVESTIMENTO') {
+                catSelect.innerHTML = `<option value="Aporte CDB">Aporte CDB / Renda Fixa</option>`;
+            } else if (type === 'RESGATE') {
+                catSelect.innerHTML = `<option value="Resgate CDB">Resgate CDB / Renda Fixa</option>`;
+            }
+
+            if (type === 'SAIDA') {
+                methodSelect.innerHTML = `
+                    <option value="PIX">PIX</option>
+                    <option value="DEBITO">Débito</option>
+                    <option value="BOLETO">Boleto</option>
+                    <option value="DINHEIRO">Dinheiro</option>
+                    <option value="CREDITO">Cartão de Crédito</option>
+                `;
+            } else {
+                methodSelect.innerHTML = `
+                    <option value="PIX">PIX</option>
+                    <option value="DEBITO">Débito</option>
+                    <option value="DINHEIRO">Dinheiro</option>
+                `;
+            }
+
+            if (Array.from(methodSelect.options).some(opt => opt.value === prevMethod)) {
+                methodSelect.value = prevMethod;
+            }
+
+            toggleCreditOptions();
+        }
+
+        function toggleCreditOptions() {
+            const method = document.getElementById('entry-method').value;
+            const instContainer = document.getElementById('installments-container');
+            const cardContainer = document.getElementById('credit-card-select-container');
+
+            if (method === 'CREDITO') {
+                instContainer.classList.remove('hidden');
+                cardContainer.classList.remove('hidden');
+            } else {
+                instContainer.classList.add('hidden');
+                cardContainer.classList.add('hidden');
+            }
+        }
+
+        function calculateMonthRef(dateStr, method, user, cardId = null) {
+            const date = new Date(dateStr + 'T00:00:00');
+            let year = date.getFullYear();
+            let month = date.getMonth();
+            const day = date.getDate();
+
+            if (method === 'CREDITO') {
+                let closingDay = 4;
+                if (cardId) {
+                    const card = creditCards.find(c => String(c.id) === String(cardId));
+                    if (card) closingDay = card.closingDay;
+                } else {
+                    const firstUserCard = creditCards.find(c => c.user === user);
+                    if (firstUserCard) closingDay = firstUserCard.closingDay;
+                }
+
+                if (day >= closingDay) {
+                    month += 1;
+                }
+            }
+
+            const refDate = new Date(year, month, 1);
+            const yyyy = refDate.getFullYear();
+            const mm = String(refDate.getMonth() + 1).padStart(2, '0');
+            return `${yyyy}-${mm}`;
+        }
+
+        // SALVAR LANÇAMENTO
+        async function handleSaveEntry(e) {
+            e.preventDefault();
+            const editId = document.getElementById('editing-id').value;
+            const type = document.getElementById('entry-type').value;
+            const category = document.getElementById('entry-category').value;
+            const desc = document.getElementById('entry-desc').value;
+            const rawAmount = parseFloat(document.getElementById('entry-amount').value);
+            const dateStr = document.getElementById('entry-date').value;
+            const method = document.getElementById('entry-method').value;
+            const cardId = method === 'CREDITO' ? document.getElementById('entry-card-id').value || null : null;
+            const installments = parseInt(document.getElementById('entry-installments').value) || 1;
+
+            if (db) {
+                if (editId) {
+                    const monthRef = calculateMonthRef(dateStr, method, currentUser, cardId);
+                    await db.collection('transactions').doc(editId).update({
+                        type, category, desc, amount: rawAmount, date: dateStr, method, cardId, monthRef
+                    });
+                } else {
+                    if (method === 'CREDITO' && installments > 1 && type === 'SAIDA') {
+                        const installmentAmount = rawAmount / installments;
+                        let baseDate = new Date(dateStr + 'T00:00:00');
+                        const batch = db.batch();
+
+                        for (let i = 0; i < installments; i++) {
+                            let pDate = new Date(baseDate);
+                            pDate.setMonth(pDate.getMonth() + i);
+                            const pDateStr = pDate.toISOString().split('T')[0];
+                            const monthRef = calculateMonthRef(pDateStr, method, currentUser, cardId);
+
+                            const newDocRef = db.collection('transactions').doc();
+                            batch.set(newDocRef, {
+                                user: currentUser,
+                                type: type,
+                                category: category,
+                                desc: `${desc} (${i + 1}/${installments})`,
+                                amount: installmentAmount,
+                                date: pDateStr,
+                                method: method,
+                                cardId: cardId,
+                                monthRef: monthRef,
+                                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                            });
+                        }
+                        await batch.commit();
+                    } else {
+                        const monthRef = calculateMonthRef(dateStr, method, currentUser, cardId);
+                        await db.collection('transactions').add({
+                            user: currentUser,
+                            type: type,
+                            category: category,
+                            desc: desc,
+                            amount: rawAmount,
+                            date: dateStr,
+                            method: method,
+                            cardId: cardId,
+                            monthRef: monthRef,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                    }
+                }
+            } else {
+                // Fallback Local sem BD
+                const monthRef = calculateMonthRef(dateStr, method, currentUser, cardId);
+                transactions.push({ id: String(Date.now()), user: currentUser, type, category, desc, amount: rawAmount, date: dateStr, method, cardId, monthRef });
+                updateViews();
+            }
+
+            closeModal();
+        }
+
+        async function deleteEntry(id) {
+            if (confirm("Tem certeza que deseja excluir este lançamento?")) {
+                if (db) {
+                    await db.collection('transactions').doc(id).delete();
+                } else {
+                    transactions = transactions.filter(t => String(t.id) !== String(id));
+                    updateViews();
+                }
+            }
+        }
+
+        // CÁLCULO DE SALDO ANTERIOR CARREGADO AUTOMATICAMENTE
+        function getPreviousAccumulatedBalance(targetMonthStr, selectedUser) {
+            let balance = 0;
+            transactions.forEach(t => {
+                if (selectedUser !== 'ALL' && t.user !== selectedUser) return;
+                if (t.monthRef < targetMonthStr) {
+                    if (t.type === 'ENTRADA' || t.type === 'RESGATE') balance += t.amount;
+                    if (t.type === 'SAIDA') balance -= t.amount;
+                    if (t.type === 'INVESTIMENTO') balance -= t.amount;
+                }
+            });
+            return balance;
+        }
+
+        // ATUALIZAÇÃO DA TELA E DRE
+        function updateViews() {
+            const selectedMonth = document.getElementById('selected-month').value;
+            const selectedUser = document.getElementById('filter-user').value;
+
+            document.getElementById('formatted-selected-month').innerText = formatMonthCapitalized(selectedMonth);
+
+            const filtered = transactions.filter(t => {
+                const matchMonth = t.monthRef === selectedMonth;
+                const matchUser = selectedUser === 'ALL' || t.user === selectedUser;
+                return matchMonth && matchUser;
+            });
+
+            let totalEntradas = 0;
+            let totalEssenciais = 0;
+            let totalNaoEssenciais = 0;
+
+            const tbody = document.getElementById('dre-table-body');
+            tbody.innerHTML = '';
+
+            filtered.forEach(t => {
+                if (t.type === 'ENTRADA' || t.type === 'RESGATE') totalEntradas += t.amount;
+                if (t.type === 'SAIDA' && t.category === 'Saída Essencial') totalEssenciais += t.amount;
+                if (t.type === 'SAIDA' && t.category === 'Saída Não Essencial') totalNaoEssenciais += t.amount;
+
+                const userBadgeClass = t.user === 'MATHEUS' ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20' : 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20';
+                const amountColor = (t.type === 'ENTRADA' || t.type === 'RESGATE') ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-800 dark:text-slate-200';
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-200/50 dark:hover:bg-slate-700/20 transition">
+                        <td class="p-3 text-xs text-slate-500 dark:text-slate-400 font-mono">${formatDateBR(t.date)}</td>
+                        <td class="p-3 font-medium text-slate-900 dark:text-white">${t.desc}</td>
+                        <td class="p-3 text-xs text-slate-500 dark:text-slate-400">${t.category}</td>
+                        <td class="p-3 text-xs text-slate-500 dark:text-slate-400">${t.method}</td>
+                        <td class="p-3">
+                            <span class="text-xs px-2 py-1 rounded-md border font-semibold ${userBadgeClass}">
+                                ${t.user}
+                            </span>
+                        </td>
+                        <td class="p-3 text-right font-semibold ${amountColor}">
+                            ${(t.type === 'ENTRADA' || t.type === 'RESGATE') ? '+' : '-'} ${formatCurrency(t.amount)}
+                        </td>
+                        <td class="p-3 text-center space-x-2">
+                            <button onclick="openModal('${t.id}')" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 p-1"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteEntry('${t.id}')" class="text-rose-600 hover:text-rose-800 dark:text-rose-400 p-1"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            const resultadoLiquidoMes = totalEntradas - (totalEssenciais + totalNaoEssenciais);
+            const saldoAnterior = getPreviousAccumulatedBalance(selectedMonth, selectedUser);
+            const saldoFinalAcumulado = saldoAnterior + resultadoLiquidoMes;
+
+            // Atualização dos KPIs
+            document.getElementById('kpi-entradas').innerText = formatCurrency(totalEntradas);
+            document.getElementById('kpi-essenciais').innerText = formatCurrency(totalEssenciais);
+            document.getElementById('kpi-nao-essenciais').innerText = formatCurrency(totalNaoEssenciais);
+            document.getElementById('kpi-resultado').innerText = formatCurrency(resultadoLiquidoMes);
+            document.getElementById('kpi-resultado').className = `text-2xl font-bold mt-2 ${resultadoLiquidoMes >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-500'}`;
+
+            // Preenchimento das Linhas de Subtração na DRE
+            const subtotalAposEssenciais = totalEntradas - totalEssenciais;
+            document.getElementById('dre-calc-ganhos').innerText = formatCurrency(totalEntradas);
+            document.getElementById('dre-calc-essenciais').innerText = formatCurrency(totalEssenciais);
+            document.getElementById('dre-calc-subtotal1').innerText = formatCurrency(subtotalAposEssenciais);
+            document.getElementById('dre-calc-nao-essenciais').innerText = formatCurrency(totalNaoEssenciais);
+            document.getElementById('dre-calc-resultado').innerText = formatCurrency(resultadoLiquidoMes);
+            document.getElementById('dre-calc-anterior').innerText = formatCurrency(saldoAnterior);
+            document.getElementById('dre-calc-acumulado').innerText = formatCurrency(saldoFinalAcumulado);
+
+            if (!document.getElementById('tab-dash').classList.contains('hidden')) renderDashboardCharts();
+            if (!document.getElementById('tab-invest').classList.contains('hidden')) renderInvestChart();
+        }
+
+        // INSTÂNCIAS DE GRÁFICOS
+        let chartTimeline12mInstance = null;
+        let chart503020Instance = null;
+        let chartTopExpensesInstance = null;
+        let chartInvestInstance = null;
+
+        function renderDashboardCharts() {
+            const selectedMonth = document.getElementById('selected-month').value;
+            const selectedUser = document.getElementById('filter-user').value;
+
+            // 1. GRÁFICO DA LINHA DO TEMPO
+            const [curYear, curMonth] = selectedMonth.split('-').map(Number);
+            const monthsList = [];
+            for (let i = 11; i >= 0; i--) {
+                const d = new Date(curYear, curMonth - 1 - i, 1);
+                const yyyy = d.getFullYear();
+                const mm = String(d.getMonth() + 1).padStart(2, '0');
+                monthsList.push(`${yyyy}-${mm}`);
+            }
+
+            const timelineGanhos = [];
+            const timelineDespesas = [];
+
+            monthsList.forEach(mStr => {
+                const mTx = transactions.filter(t => t.monthRef === mStr && (selectedUser === 'ALL' || t.user === selectedUser));
+                const g = mTx.filter(t => t.type === 'ENTRADA' || t.type === 'RESGATE').reduce((acc, t) => acc + t.amount, 0);
+                const d = mTx.filter(t => t.type === 'SAIDA').reduce((acc, t) => acc + t.amount, 0);
+                timelineGanhos.push(g);
+                timelineDespesas.push(d);
+            });
+
+            const ctxTimeline = document.getElementById('chart-timeline-12m').getContext('2d');
+            if (chartTimeline12mInstance) chartTimeline12mInstance.destroy();
+
+            const timelineBarValuesPlugin = {
+                id: 'timelineBarValuesPlugin',
+                afterDatasetsDraw(chart) {
+                    const { ctx } = chart;
+                    chart.data.datasets.forEach((dataset, i) => {
+                        const meta = chart.getDatasetMeta(i);
+                        meta.data.forEach((bar, index) => {
+                            const val = dataset.data[index];
+                            if (val !== undefined && val !== null && val > 0) {
+                                ctx.save();
+                                ctx.fillStyle = i === 0 ? '#10b981' : '#f43f5e';
+                                ctx.font = 'bold 9px sans-serif';
+                                ctx.textAlign = 'center';
+                                ctx.fillText(formatCurrency(val), bar.x, bar.y - 4);
+                                ctx.restore();
+                            }
+                        });
+                    });
+                }
+            };
+
+            chartTimeline12mInstance = new Chart(ctxTimeline, {
+                type: 'bar',
+                data: {
+                    labels: monthsList.map(m => {
+                        const [y, mNum] = m.split('-');
+                        return `${mNum}/${y}`;
+                    }),
+                    datasets: [
+                        { label: 'Ganhos', data: timelineGanhos, backgroundColor: '#10b981', borderRadius: 4 },
+                        { label: 'Despesas', data: timelineDespesas, backgroundColor: '#f43f5e', borderRadius: 4 }
+                    ]
+                },
+                plugins: [timelineBarValuesPlugin],
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#94a3b8' }
+                        },
+                        y: {
+                            display: false,
+                            grid: { display: false }
+                        }
+                    },
+                    plugins: { legend: { labels: { color: '#94a3b8' } } }
+                }
+            });
+
+            // 2. GRÁFICO DISTRIBUIÇÃO DE GASTOS
+            const monthTx = transactions.filter(t => t.monthRef === selectedMonth && (selectedUser === 'ALL' || t.user === selectedUser));
+            const essenciais = monthTx.filter(t => t.category === 'Saída Essencial').reduce((acc, t) => acc + t.amount, 0);
+            const naoEssenciais = monthTx.filter(t => t.category === 'Saída Não Essencial').reduce((acc, t) => acc + t.amount, 0);
+            const investimentos = monthTx.filter(t => t.type === 'INVESTIMENTO').reduce((acc, t) => acc + t.amount, 0);
+
+            const ctx1 = document.getElementById('chart-503020').getContext('2d');
+            if(chart503020Instance) chart503020Instance.destroy();
+
+            const doughnutSliceLabelsPlugin = {
+                id: 'doughnutSliceLabelsPlugin',
+                afterDatasetsDraw(chart) {
+                    const { ctx, data } = chart;
+                    const dataset = data.datasets[0];
+                    const total = dataset.data.reduce((a, b) => a + b, 0);
+                    if (total === 0) return;
+
+                    chart.getDatasetMeta(0).data.forEach((datapoint, index) => {
+                        const val = dataset.data[index];
+                        if (!val || val === 0) return;
+
+                        const label = data.labels[index];
+                        const pct = ((val / total) * 100).toFixed(1) + '%';
+                        const { x, y } = datapoint.tooltipPosition();
+
+                        ctx.save();
+                        ctx.fillStyle = '#ffffff';
+                        ctx.font = 'bold 10px sans-serif';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
+                        ctx.shadowBlur = 4;
+
+                        ctx.fillText(label, x, y - 7);
+                        ctx.fillText(`${pct} (${formatCurrency(val)})`, x, y + 7);
+                        ctx.restore();
+                    });
+                }
+            };
+
+            chart503020Instance = new Chart(ctx1, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Essenciais', 'Não Essenciais', 'Aportes CDB'],
+                    datasets: [{
+                        data: [essenciais, naoEssenciais, investimentos],
+                        backgroundColor: ['#f59e0b', '#f43f5e', '#10b981'],
+                        borderWidth: 0
+                    }]
+                },
+                plugins: [doughnutSliceLabelsPlugin],
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+
+            // 3. GRÁFICO MAIORES DESPESAS DO MÊS
+            const expenseMap = {};
+            monthTx.filter(t => t.type === 'SAIDA').forEach(t => {
+                expenseMap[t.desc] = (expenseMap[t.desc] || 0) + t.amount;
+            });
+
+            const sortedExpenses = Object.entries(expenseMap).sort((a,b) => b[1] - a[1]).slice(0, 5);
+
+            const ctx2 = document.getElementById('chart-top-expenses').getContext('2d');
+            if(chartTopExpensesInstance) chartTopExpensesInstance.destroy();
+
+            const topBarValuesPlugin = {
+                id: 'topBarValuesPlugin',
+                afterDatasetsDraw(chart) {
+                    const { ctx } = chart;
+                    chart.data.datasets.forEach((dataset, i) => {
+                        const meta = chart.getDatasetMeta(i);
+                        meta.data.forEach((bar, index) => {
+                            const val = dataset.data[index];
+                            if (val !== undefined && val !== null) {
+                                ctx.save();
+                                ctx.fillStyle = '#94a3b8';
+                                ctx.font = 'bold 10px sans-serif';
+                                ctx.textAlign = 'center';
+                                ctx.fillText(formatCurrency(val), bar.x, bar.y - 6);
+                                ctx.restore();
+                            }
+                        });
+                    });
+                }
+            };
+
+            chartTopExpensesInstance = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: sortedExpenses.map(item => item[0]),
+                    datasets: [{
+                        label: 'Valor Gasto (R$)',
+                        data: sortedExpenses.map(item => item[1]),
+                        backgroundColor: '#6366f1',
+                        borderRadius: 6
+                    }]
+                },
+                plugins: [topBarValuesPlugin],
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    layout: {
+                        padding: {
+                            top: 25
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#94a3b8' }
+                        },
+                        y: {
+                            display: false,
+                            grid: { display: false },
+                            grace: '15%'
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+
+        // CÁLCULO E EVOLUÇÃO REALISTA DO CDB
+        function renderInvestChart() {
+            const selectedUser = document.getElementById('filter-user').value;
+            const rangeType = document.getElementById('invest-range').value;
+            const selectedMonth = document.getElementById('selected-month').value;
+
+            const initialAmount = parseFloat(document.getElementById('cdb-initial-amount').value) || 0;
+            const initialDateStr = document.getElementById('cdb-initial-date').value;
+
+            // Saldo do CDB acumulado até o mês selecionado
+            let currentCdbBalance = 0;
+
+            if (initialAmount > 0 && initialDateStr && initialDateStr <= selectedMonth) {
+                currentCdbBalance += initialAmount;
+            }
+
+            transactions.forEach(t => {
+                if (selectedUser !== 'ALL' && t.user !== selectedUser) return;
+                if (t.monthRef <= selectedMonth) {
+                    if (t.type === 'INVESTIMENTO') currentCdbBalance += t.amount;
+                    if (t.type === 'RESGATE') currentCdbBalance -= t.amount;
+                }
+            });
+            currentCdbBalance = Math.max(0, currentCdbBalance);
+
+            const cdbRateAnnual = parseFloat(document.getElementById('cdb-rate').value) || 10.75;
+            const cdbRateMonthly = Math.pow(1 + (cdbRateAnnual / 100), 1/12) - 1;
+
+            const rendimentoMensal = currentCdbBalance * cdbRateMonthly;
+            document.getElementById('cdb-total-balance').innerText = formatCurrency(currentCdbBalance);
+            document.getElementById('cdb-monthly-yield').innerText = formatCurrency(rendimentoMensal);
+
+            // Construção dos dados considerando o Saldo Inicial e Resgates Futuros
+            const labels = [];
+            const dataProj = [];
+            const [selYear, selMonth] = selectedMonth.split('-').map(Number);
+
+            if (rangeType.endsWith('_PAST')) {
+                const count = rangeType === '6M_PAST' ? 6 : 12;
+                document.getElementById('cdb-projected-label').innerText = `Saldo no Fim do Período (${count}M Passados)`;
+
+                for (let i = count - 1; i >= 0; i--) {
+                    const d = new Date(selYear, selMonth - 1 - i, 1);
+                    const yyyy = d.getFullYear();
+                    const mm = String(d.getMonth() + 1).padStart(2, '0');
+                    const targetMonth = `${yyyy}-${mm}`;
+
+                    let monthBalance = 0;
+                    if (initialAmount > 0 && initialDateStr && initialDateStr <= targetMonth) {
+                        monthBalance += initialAmount;
+                    }
+
+                    transactions.forEach(t => {
+                        if (selectedUser !== 'ALL' && t.user !== selectedUser) return;
+                        if (t.monthRef <= targetMonth) {
+                            if (t.type === 'INVESTIMENTO') monthBalance += t.amount;
+                            if (t.type === 'RESGATE') monthBalance -= t.amount;
+                        }
+                    });
+
+                    labels.push(`${mm}/${yyyy}`);
+                    dataProj.push(Math.max(0, monthBalance));
+                }
+            } else if (rangeType.endsWith('_FUTURE')) {
+                const count = rangeType === '6M_FUTURE' ? 6 : 12;
+                document.getElementById('cdb-projected-label').innerText = `Projeção Saldo em ${count} Meses`;
+
+                labels.push(`${String(selMonth).padStart(2, '0')}/${selYear}`);
+                dataProj.push(currentCdbBalance);
+
+                let accum = currentCdbBalance;
+                for (let i = 1; i <= count; i++) {
+                    const d = new Date(selYear, selMonth - 1 + i, 1);
+                    const yyyy = d.getFullYear();
+                    const mm = String(d.getMonth() + 1).padStart(2, '0');
+                    const targetMonthStr = `${yyyy}-${mm}`;
+
+                    accum = accum * (1 + cdbRateMonthly);
+
+                    const futureTx = transactions.filter(t => t.monthRef === targetMonthStr && (selectedUser === 'ALL' || t.user === selectedUser));
+                    const futureAportes = futureTx.filter(t => t.type === 'INVESTIMENTO').reduce((a, b) => a + b.amount, 0);
+                    const futureResgates = futureTx.filter(t => t.type === 'RESGATE').reduce((a, b) => a + b.amount, 0);
+
+                    accum = accum + futureAportes - futureResgates;
+                    if (accum < 0) accum = 0;
+
+                    labels.push(`${mm}/${yyyy}`);
+                    dataProj.push(accum);
+                }
+            }
+
+            const finalPeriodBalance = dataProj.length > 0 ? dataProj[dataProj.length - 1] : 0;
+            document.getElementById('cdb-projected-val').innerText = formatCurrency(finalPeriodBalance);
+
+            const ctx3 = document.getElementById('chart-invest-evolution').getContext('2d');
+            if(chartInvestInstance) chartInvestInstance.destroy();
+
+            chartInvestInstance = new Chart(ctx3, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: `Evolução CDB (${cdbRateAnnual}% a.a.)`,
+                        data: dataProj,
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { ticks: { color: '#94a3b8' } },
+                        y: { ticks: { color: '#94a3b8' } }
+                    },
+                    plugins: { legend: { labels: { color: '#94a3b8' } } }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
