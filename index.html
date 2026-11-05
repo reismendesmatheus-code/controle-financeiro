@@ -68,7 +68,7 @@
                     </button>
                 </div>
 
-                <!-- Perfil do Usuário Logado (FUNDO BRANCO LIMPO) -->
+                <!-- Perfil do Usuário Logado -->
                 <div class="bg-white dark:bg-slate-900/60 p-3 rounded-xl border border-sky-200 dark:border-slate-700/50 mb-6 flex items-center justify-between shadow-sm">
                     <div class="flex items-center gap-3">
                         <div id="user-avatar" class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-white bg-blue-600">
@@ -114,10 +114,10 @@
                 </div>
                 
                 <div class="flex flex-wrap items-center gap-3">
-                    <!-- Seleção de Mês / Ano (FUNDO BRANCO LIMPO) -->
+                    <!-- Seleção de Mês / Ano -->
                     <input type="month" id="selected-month" onchange="updateViews()" class="capitalize bg-white dark:bg-slate-800 border border-sky-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm rounded-lg p-2.5 outline-none focus:border-emerald-500 shadow-sm">
                     
-                    <!-- Filtro por Usuário (FUNDO BRANCO LIMPO) -->
+                    <!-- Filtro por Usuário -->
                     <select id="filter-user" onchange="updateViews()" class="bg-white dark:bg-slate-800 border border-sky-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm rounded-lg p-2.5 outline-none focus:border-emerald-500 shadow-sm">
                         <option value="ALL">CASAL (Consolidado)</option>
                         <option value="MATHEUS">MATHEUS</option>
@@ -131,7 +131,7 @@
                 </div>
             </div>
 
-            <!-- CARDS DE RESUMO (KPIs - FUNDO BRANCO LIMPO) -->
+            <!-- CARDS DE RESUMO (KPIs) -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                 <div class="bg-white dark:bg-slate-800/80 border border-sky-200 dark:border-slate-700/60 rounded-2xl p-5 shadow-sm">
                     <p class="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold">Total Entradas</p>
@@ -153,7 +153,6 @@
 
             <!-- TAB 1: DRE MENSAL -->
             <section id="tab-dre" class="space-y-6">
-                <!-- CAIXA PRINCIPAL DA TABELA (FUNDO BRANCO LIMPO) -->
                 <div class="bg-white dark:bg-slate-800/60 border border-sky-200 dark:border-slate-700/50 rounded-2xl p-6 shadow-sm">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
@@ -164,9 +163,10 @@
                         </button>
                     </div>
                     
-                    <div class="overflow-x-auto mb-8">
+                    <div class="overflow-x-auto mb-8 rounded-lg">
                         <table class="w-full text-left text-sm text-slate-700 dark:text-slate-300">
-                            <thead class="bg-sky-200/70 dark:bg-slate-900/70 text-slate-700 dark:text-slate-400 uppercase text-xs">
+                            <!-- CABEÇALHO COM AZUL MAIS SUAVE (bg-sky-100/60) -->
+                            <thead class="bg-sky-100/60 dark:bg-slate-900/70 text-slate-700 dark:text-slate-400 uppercase text-xs">
                                 <tr>
                                     <!-- FILTROS MULTI-SELEÇÃO COM CHECKBOXES -->
                                     <th class="p-3 relative">
@@ -279,7 +279,7 @@
 
             <!-- TAB 2: DASHBOARD -->
             <section id="tab-dash" class="hidden space-y-6">
-                <!-- Gráfico de Evolução (Linha do Tempo - FUNDO BRANCO LIMPO) -->
+                <!-- Gráfico de Evolução (Linha do Tempo) -->
                 <div class="bg-white dark:bg-slate-800/60 border border-sky-200 dark:border-slate-700/50 rounded-2xl p-6 shadow-sm">
                     <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
                         <i class="fa-solid fa-chart-column text-emerald-500"></i> Evolução da Linha do Tempo
@@ -290,14 +290,14 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Gráfico Distribuição de Gastos (FUNDO BRANCO LIMPO) -->
+                    <!-- Gráfico Distribuição de Gastos -->
                     <div class="bg-white dark:bg-slate-800/60 border border-sky-200 dark:border-slate-700/50 rounded-2xl p-6 shadow-sm">
                         <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4">Distribuição de Gastos</h3>
                         <div class="h-64 flex justify-center">
                             <canvas id="chart-503020"></canvas>
                         </div>
                     </div>
-                    <!-- Gráfico Maiores Categorias de Gastos (FUNDO BRANCO LIMPO) -->
+                    <!-- Gráfico Maiores Categorias de Gastos -->
                     <div class="bg-white dark:bg-slate-800/60 border border-sky-200 dark:border-slate-700/50 rounded-2xl p-6 shadow-sm">
                         <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4">Maiores Despesas do Mês</h3>
                         <div class="h-64 flex justify-center">
