@@ -21,11 +21,11 @@
         }
     </script>
 </head>
-<body class="bg-slate-200/50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 min-h-screen font-sans transition-colors duration-300">
+<body class="bg-slate-200/70 text-slate-800 dark:bg-slate-900 dark:text-slate-100 min-h-screen font-sans transition-colors duration-300">
 
     <!-- TELA DE LOGIN -->
     <div id="login-modal" class="fixed inset-0 bg-slate-950/90 z-50 flex items-center justify-center p-4">
-        <div class="bg-slate-50 dark:bg-slate-800 p-8 rounded-2xl shadow-2xl border border-slate-300/70 dark:border-slate-700 max-w-md w-full">
+        <div class="bg-slate-100 dark:bg-slate-800 p-8 rounded-2xl shadow-2xl border border-slate-300 dark:border-slate-700 max-w-md w-full">
             <div class="text-center mb-8">
                 <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 mb-3">
                     <i class="fa-solid fa-wallet text-3xl"></i>
@@ -34,14 +34,14 @@
                 <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Entre com suas credenciais de acesso</p>
             </div>
             
-            <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
+            <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4" autocomplete="off">
                 <div>
                     <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Usuário</label>
-                    <input type="text" id="login-user" class="w-full bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-3 text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 uppercase" placeholder="MATHEUS ou RHAUANE" required>
+                    <input type="text" id="login-user" autocomplete="off" name="no-user" class="w-full bg-slate-200/80 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-3 text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 uppercase" placeholder="MATHEUS ou RHAUANE" required>
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Senha</label>
-                    <input type="password" id="login-pass" class="w-full bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-3 text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500" placeholder="••••••" required>
+                    <input type="password" id="login-pass" autocomplete="off" name="no-pass" class="w-full bg-slate-200/80 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-3 text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500" placeholder="••••••" required>
                 </div>
                 <div id="login-error" class="text-rose-500 text-xs text-center hidden">Usuário ou senha incorretos.</div>
                 <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 rounded-lg transition-all duration-200 shadow-lg shadow-emerald-600/20">
@@ -55,7 +55,7 @@
     <div id="app" class="hidden min-h-screen flex flex-col md:flex-row">
         
         <!-- SIDEBAR -->
-        <aside class="w-full md:w-64 bg-slate-50 dark:bg-slate-800 border-r border-slate-300/60 dark:border-slate-700/50 p-6 flex flex-col justify-between">
+        <aside class="w-full md:w-64 bg-slate-100 dark:bg-slate-800 border-r border-slate-300/80 dark:border-slate-700/50 p-6 flex flex-col justify-between">
             <div>
                 <div class="flex items-center justify-between mb-8">
                     <div class="flex items-center gap-3">
@@ -63,13 +63,13 @@
                         <span class="font-bold text-lg text-slate-900 dark:text-white">Finanças</span>
                     </div>
                     <!-- Botão Dark/Light Mode -->
-                    <button onclick="toggleTheme()" class="p-2 rounded-lg bg-slate-200/70 dark:bg-slate-700/50 hover:bg-slate-300/70 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition">
+                    <button onclick="toggleTheme()" class="p-2 rounded-lg bg-slate-200 dark:bg-slate-700/50 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition">
                         <i id="theme-icon" class="fa-solid fa-sun"></i>
                     </button>
                 </div>
 
                 <!-- Perfil do Usuário Logado -->
-                <div class="bg-slate-200/50 dark:bg-slate-900/60 p-3 rounded-xl border border-slate-300/60 dark:border-slate-700/50 mb-6 flex items-center justify-between">
+                <div class="bg-slate-200/70 dark:bg-slate-900/60 p-3 rounded-xl border border-slate-300/70 dark:border-slate-700/50 mb-6 flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div id="user-avatar" class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-white bg-blue-600">
                             M
@@ -83,16 +83,16 @@
 
                 <!-- NAVEGAÇÃO -->
                 <nav class="space-y-2">
-                    <button onclick="switchTab('dre')" id="nav-dre" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-slate-700/50 text-left transition">
+                    <button onclick="switchTab('dre')" id="nav-dre" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-emerald-700 dark:text-emerald-400 bg-emerald-100/70 dark:bg-slate-700/50 text-left transition">
                         <i class="fa-solid fa-list-check w-5"></i> DRE Mensal
                     </button>
-                    <button onclick="switchTab('dash')" id="nav-dash" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-slate-700/30 text-left transition">
+                    <button onclick="switchTab('dash')" id="nav-dash" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700/30 text-left transition">
                         <i class="fa-solid fa-chart-line w-5"></i> Dashboard
                     </button>
-                    <button onclick="switchTab('invest')" id="nav-invest" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-slate-700/30 text-left transition">
+                    <button onclick="switchTab('invest')" id="nav-invest" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700/30 text-left transition">
                         <i class="fa-solid fa-piggy-bank w-5"></i> Investimentos CDB
                     </button>
-                    <button onclick="openCardManagerModal()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-slate-700/30 text-left transition mt-4">
+                    <button onclick="openCardManagerModal()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700/30 text-left transition mt-4">
                         <i class="fa-solid fa-credit-card w-5"></i> Meus Cartões
                     </button>
                 </nav>
@@ -115,10 +115,10 @@
                 
                 <div class="flex flex-wrap items-center gap-3">
                     <!-- Seleção de Mês / Ano -->
-                    <input type="month" id="selected-month" onchange="updateViews()" class="capitalize bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white text-sm rounded-lg p-2.5 outline-none focus:border-emerald-500 shadow-sm">
+                    <input type="month" id="selected-month" onchange="updateViews()" class="capitalize bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white text-sm rounded-lg p-2.5 outline-none focus:border-emerald-500 shadow-sm">
                     
                     <!-- Filtro por Usuário -->
-                    <select id="filter-user" onchange="updateViews()" class="bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white text-sm rounded-lg p-2.5 outline-none focus:border-emerald-500 shadow-sm">
+                    <select id="filter-user" onchange="updateViews()" class="bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white text-sm rounded-lg p-2.5 outline-none focus:border-emerald-500 shadow-sm">
                         <option value="ALL">CASAL (Consolidado)</option>
                         <option value="MATHEUS">MATHEUS</option>
                         <option value="RHAUANE">RHAUANE</option>
@@ -133,19 +133,19 @@
 
             <!-- CARDS DE RESUMO (KPIs) -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                <div class="bg-slate-50 dark:bg-slate-800/80 border border-slate-300/60 dark:border-slate-700/60 rounded-2xl p-5 shadow-sm">
+                <div class="bg-slate-100/90 dark:bg-slate-800/80 border border-slate-300/80 dark:border-slate-700/60 rounded-2xl p-5 shadow-sm">
                     <p class="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold">Total Entradas</p>
                     <p class="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-2" id="kpi-entradas">R$ 0,00</p>
                 </div>
-                <div class="bg-slate-50 dark:bg-slate-800/80 border border-slate-300/60 dark:border-slate-700/60 rounded-2xl p-5 shadow-sm">
+                <div class="bg-slate-100/90 dark:bg-slate-800/80 border border-slate-300/80 dark:border-slate-700/60 rounded-2xl p-5 shadow-sm">
                     <p class="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold">Saídas Essenciais</p>
                     <p class="text-2xl font-bold text-amber-600 dark:text-amber-400 mt-2" id="kpi-essenciais">R$ 0,00</p>
                 </div>
-                <div class="bg-slate-50 dark:bg-slate-800/80 border border-slate-300/60 dark:border-slate-700/60 rounded-2xl p-5 shadow-sm">
+                <div class="bg-slate-100/90 dark:bg-slate-800/80 border border-slate-300/80 dark:border-slate-700/60 rounded-2xl p-5 shadow-sm">
                     <p class="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold">Saídas Não Essenciais</p>
                     <p class="text-2xl font-bold text-rose-600 dark:text-rose-400 mt-2" id="kpi-nao-essenciais">R$ 0,00</p>
                 </div>
-                <div class="bg-slate-50 dark:bg-slate-800/80 border border-slate-300/60 dark:border-slate-700/60 rounded-2xl p-5 shadow-sm">
+                <div class="bg-slate-100/90 dark:bg-slate-800/80 border border-slate-300/80 dark:border-slate-700/60 rounded-2xl p-5 shadow-sm">
                     <p class="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold">Resultado Líquido Mês</p>
                     <p class="text-2xl font-bold text-slate-900 dark:text-white mt-2" id="kpi-resultado">R$ 0,00</p>
                 </div>
@@ -153,36 +153,108 @@
 
             <!-- TAB 1: DRE MENSAL -->
             <section id="tab-dre" class="space-y-6">
-                <div class="bg-slate-50 dark:bg-slate-800/60 border border-slate-300/60 dark:border-slate-700/50 rounded-2xl p-6 shadow-sm">
-                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                        <i class="fa-solid fa-bars-staggered text-emerald-600 dark:text-emerald-400"></i> Lançamentos do Mês
-                    </h3>
+                <div class="bg-slate-100/90 dark:bg-slate-800/60 border border-slate-300/80 dark:border-slate-700/50 rounded-2xl p-6 shadow-sm">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                            <i class="fa-solid fa-bars-staggered text-emerald-600 dark:text-emerald-400"></i> Lançamentos do Mês
+                        </h3>
+                        <button id="clear-filters-btn" onclick="clearTableFilters()" class="hidden text-xs text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                            <i class="fa-solid fa-filter-circle-xmark"></i> Limpar Filtros
+                        </button>
+                    </div>
                     
                     <div class="overflow-x-auto mb-8">
                         <table class="w-full text-left text-sm text-slate-700 dark:text-slate-300">
-                            <thead class="bg-slate-200/60 dark:bg-slate-900/50 text-slate-500 dark:text-slate-400 uppercase text-xs">
+                            <thead class="bg-slate-200/80 dark:bg-slate-900/70 text-slate-600 dark:text-slate-400 uppercase text-xs">
                                 <tr>
-                                    <th class="p-3">Data</th>
-                                    <th class="p-3">Descrição</th>
-                                    <th class="p-3">Classificação</th>
-                                    <th class="p-3">Método</th>
-                                    <th class="p-3">Usuário</th>
-                                    <th class="p-3 text-right">Valor</th>
+                                    <!-- FILTROS NOS ÍNDICES DA TABELA -->
+                                    <th class="p-3 relative">
+                                        <div class="flex items-center justify-between gap-1">
+                                            <span>Data</span>
+                                            <button onclick="toggleFilterMenu('date')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1"><i class="fa-solid fa-chevron-down text-[10px]"></i></button>
+                                        </div>
+                                        <div id="filter-menu-date" class="hidden absolute top-full left-0 mt-1 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg shadow-xl p-2 z-20 min-w-[150px] lowercase normal-case">
+                                            <select id="col-filter-date" onchange="applyColumnFilters()" class="w-full bg-slate-100 dark:bg-slate-900 text-xs text-slate-800 dark:text-slate-200 p-1.5 rounded border border-slate-300 dark:border-slate-700">
+                                                <option value="">(Todos)</option>
+                                            </select>
+                                        </div>
+                                    </th>
+
+                                    <th class="p-3 relative">
+                                        <div class="flex items-center justify-between gap-1">
+                                            <span>Descrição</span>
+                                            <button onclick="toggleFilterMenu('desc')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1"><i class="fa-solid fa-chevron-down text-[10px]"></i></button>
+                                        </div>
+                                        <div id="filter-menu-desc" class="hidden absolute top-full left-0 mt-1 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg shadow-xl p-2 z-20 min-w-[180px] lowercase normal-case">
+                                            <select id="col-filter-desc" onchange="applyColumnFilters()" class="w-full bg-slate-100 dark:bg-slate-900 text-xs text-slate-800 dark:text-slate-200 p-1.5 rounded border border-slate-300 dark:border-slate-700">
+                                                <option value="">(Todos)</option>
+                                            </select>
+                                        </div>
+                                    </th>
+
+                                    <th class="p-3 relative">
+                                        <div class="flex items-center justify-between gap-1">
+                                            <span>Classificação</span>
+                                            <button onclick="toggleFilterMenu('category')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1"><i class="fa-solid fa-chevron-down text-[10px]"></i></button>
+                                        </div>
+                                        <div id="filter-menu-category" class="hidden absolute top-full left-0 mt-1 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg shadow-xl p-2 z-20 min-w-[160px] lowercase normal-case">
+                                            <select id="col-filter-category" onchange="applyColumnFilters()" class="w-full bg-slate-100 dark:bg-slate-900 text-xs text-slate-800 dark:text-slate-200 p-1.5 rounded border border-slate-300 dark:border-slate-700">
+                                                <option value="">(Todos)</option>
+                                            </select>
+                                        </div>
+                                    </th>
+
+                                    <th class="p-3 relative">
+                                        <div class="flex items-center justify-between gap-1">
+                                            <span>Método</span>
+                                            <button onclick="toggleFilterMenu('method')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1"><i class="fa-solid fa-chevron-down text-[10px]"></i></button>
+                                        </div>
+                                        <div id="filter-menu-method" class="hidden absolute top-full left-0 mt-1 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg shadow-xl p-2 z-20 min-w-[140px] lowercase normal-case">
+                                            <select id="col-filter-method" onchange="applyColumnFilters()" class="w-full bg-slate-100 dark:bg-slate-900 text-xs text-slate-800 dark:text-slate-200 p-1.5 rounded border border-slate-300 dark:border-slate-700">
+                                                <option value="">(Todos)</option>
+                                            </select>
+                                        </div>
+                                    </th>
+
+                                    <th class="p-3 relative">
+                                        <div class="flex items-center justify-between gap-1">
+                                            <span>Usuário</span>
+                                            <button onclick="toggleFilterMenu('user')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1"><i class="fa-solid fa-chevron-down text-[10px]"></i></button>
+                                        </div>
+                                        <div id="filter-menu-user" class="hidden absolute top-full left-0 mt-1 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg shadow-xl p-2 z-20 min-w-[130px] lowercase normal-case">
+                                            <select id="col-filter-user" onchange="applyColumnFilters()" class="w-full bg-slate-100 dark:bg-slate-900 text-xs text-slate-800 dark:text-slate-200 p-1.5 rounded border border-slate-300 dark:border-slate-700">
+                                                <option value="">(Todos)</option>
+                                            </select>
+                                        </div>
+                                    </th>
+
+                                    <th class="p-3 text-right relative">
+                                        <div class="flex items-center justify-end gap-1">
+                                            <span>Valor</span>
+                                            <button onclick="toggleFilterMenu('amount')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1"><i class="fa-solid fa-chevron-down text-[10px]"></i></button>
+                                        </div>
+                                        <div id="filter-menu-amount" class="hidden absolute top-full right-0 mt-1 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg shadow-xl p-2 z-20 min-w-[150px] lowercase normal-case">
+                                            <select id="col-filter-amount" onchange="applyColumnFilters()" class="w-full bg-slate-100 dark:bg-slate-900 text-xs text-slate-800 dark:text-slate-200 p-1.5 rounded border border-slate-300 dark:border-slate-700">
+                                                <option value="">(Todos)</option>
+                                            </select>
+                                        </div>
+                                    </th>
+
                                     <th class="p-3 text-center">Ações</th>
                                 </tr>
                             </thead>
-                            <tbody id="dre-table-body" class="divide-y divide-slate-200 dark:divide-slate-700/40">
+                            <tbody id="dre-table-body" class="divide-y divide-slate-300/60 dark:divide-slate-700/40">
                                 <!-- Preenchido por JS -->
                             </tbody>
                         </table>
                     </div>
 
-                    <!-- SUBTOTAIS E DEMONSTRATIVO DE SUBTRAÇÕES -->
-                    <div class="border-t border-slate-300/60 dark:border-slate-700 pt-6">
-                        <h4 class="text-md font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                            <i class="fa-solid fa-calculator text-blue-500"></i> Fechamento do Mês
+                    <!-- SUBTOTAIS E DEMONSTRATIVO DE SUBTRAÇÕES (EXPANDIDO) -->
+                    <div class="border-t border-slate-300/80 dark:border-slate-700 pt-6">
+                        <h4 class="text-md font-bold text-slate-900 dark:text-white mb-4">
+                            Fechamento do Mês
                         </h4>
-                        <div class="bg-slate-200/40 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-300/60 dark:border-slate-700 space-y-3 max-w-2xl text-sm">
+                        <div class="bg-slate-200/60 dark:bg-slate-900/50 p-5 rounded-xl border border-slate-300/80 dark:border-slate-700 space-y-3 w-full text-sm">
                             <div class="flex justify-between items-center text-emerald-600 dark:text-emerald-400">
                                 <span>(+) Total de Ganhos / Entradas</span>
                                 <span class="font-bold" id="dre-calc-ganhos">R$ 0,00</span>
@@ -191,7 +263,7 @@
                                 <span>(-) Despesas Essenciais</span>
                                 <span class="font-bold" id="dre-calc-essenciais">R$ 0,00</span>
                             </div>
-                            <div class="flex justify-between items-center pt-2 border-t border-slate-300/60 dark:border-slate-800 font-semibold text-slate-800 dark:text-slate-200">
+                            <div class="flex justify-between items-center pt-2 border-t border-slate-300/80 dark:border-slate-800 font-semibold text-slate-800 dark:text-slate-200">
                                 <span>(=) Subtotal após Essenciais</span>
                                 <span id="dre-calc-subtotal1">R$ 0,00</span>
                             </div>
@@ -199,7 +271,7 @@
                                 <span>(-) Despesas Não Essenciais</span>
                                 <span class="font-bold" id="dre-calc-nao-essenciais">R$ 0,00</span>
                             </div>
-                            <div class="flex justify-between items-center pt-2 border-t border-slate-300/60 dark:border-slate-800 font-bold text-slate-900 dark:text-white text-base">
+                            <div class="flex justify-between items-center pt-2 border-t border-slate-300/80 dark:border-slate-800 font-bold text-slate-900 dark:text-white text-base">
                                 <span>(=) Resultado Líquido do Mês</span>
                                 <span id="dre-calc-resultado">R$ 0,00</span>
                             </div>
@@ -207,7 +279,7 @@
                                 <span>(+) Saldo Carregado do Mês Anterior</span>
                                 <span id="dre-calc-anterior">R$ 0,00</span>
                             </div>
-                            <div class="flex justify-between items-center pt-2 border-t border-slate-300 dark:border-slate-700 font-bold text-blue-600 dark:text-blue-400 text-base">
+                            <div class="flex justify-between items-center pt-2 border-t border-slate-300/80 dark:border-slate-700 font-bold text-blue-600 dark:text-blue-400 text-base">
                                 <span>(=) Saldo Acumulado Final</span>
                                 <span id="dre-calc-acumulado">R$ 0,00</span>
                             </div>
@@ -219,7 +291,7 @@
             <!-- TAB 2: DASHBOARD -->
             <section id="tab-dash" class="hidden space-y-6">
                 <!-- Gráfico de Evolução (Linha do Tempo) -->
-                <div class="bg-slate-50 dark:bg-slate-800/60 border border-slate-300/60 dark:border-slate-700/50 rounded-2xl p-6 shadow-sm">
+                <div class="bg-slate-100/90 dark:bg-slate-800/60 border border-slate-300/80 dark:border-slate-700/50 rounded-2xl p-6 shadow-sm">
                     <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
                         <i class="fa-solid fa-chart-column text-emerald-500"></i> Evolução da Linha do Tempo
                     </h3>
@@ -230,14 +302,14 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Gráfico Distribuição de Gastos -->
-                    <div class="bg-slate-50 dark:bg-slate-800/60 border border-slate-300/60 dark:border-slate-700/50 rounded-2xl p-6 shadow-sm">
+                    <div class="bg-slate-100/90 dark:bg-slate-800/60 border border-slate-300/80 dark:border-slate-700/50 rounded-2xl p-6 shadow-sm">
                         <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4">Distribuição de Gastos</h3>
                         <div class="h-64 flex justify-center">
                             <canvas id="chart-503020"></canvas>
                         </div>
                     </div>
                     <!-- Gráfico Maiores Categorias de Gastos -->
-                    <div class="bg-slate-50 dark:bg-slate-800/60 border border-slate-300/60 dark:border-slate-700/50 rounded-2xl p-6 shadow-sm">
+                    <div class="bg-slate-100/90 dark:bg-slate-800/60 border border-slate-300/80 dark:border-slate-700/50 rounded-2xl p-6 shadow-sm">
                         <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4">Maiores Despesas do Mês</h3>
                         <div class="h-64 flex justify-center">
                             <canvas id="chart-top-expenses"></canvas>
@@ -248,7 +320,7 @@
 
             <!-- TAB 3: INVESTIMENTOS (RENDA FIXA / CDB) -->
             <section id="tab-invest" class="hidden space-y-6">
-                <div class="bg-slate-50 dark:bg-slate-800/60 border border-slate-300/60 dark:border-slate-700/50 rounded-2xl p-6 shadow-sm">
+                <div class="bg-slate-100/90 dark:bg-slate-800/60 border border-slate-300/80 dark:border-slate-700/50 rounded-2xl p-6 shadow-sm">
                     <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6">
                         <div>
                             <h3 class="text-lg font-bold text-slate-900 dark:text-white">Aplicações em Renda Fixa / CDB</h3>
@@ -256,30 +328,27 @@
                         </div>
                         
                         <div class="flex flex-wrap items-center gap-2">
-                            <!-- BOTÃO DE EXPANSÃO / OCULTAÇÃO DO INVESTIMENTO INICIAL -->
-                            <button onclick="toggleInitialCdbFields()" class="bg-slate-200/60 dark:bg-slate-900/60 hover:bg-slate-300/60 dark:hover:bg-slate-700/60 p-2.5 rounded-xl border border-slate-300/60 dark:border-slate-700 text-xs font-medium text-slate-700 dark:text-slate-300 flex items-center gap-2 transition shadow-sm">
+                            <button onclick="toggleInitialCdbFields()" class="bg-slate-200/80 dark:bg-slate-900/60 hover:bg-slate-300/80 dark:hover:bg-slate-700/60 p-2.5 rounded-xl border border-slate-300/80 dark:border-slate-700 text-xs font-medium text-slate-700 dark:text-slate-300 flex items-center gap-2 transition shadow-sm">
                                 <i class="fa-solid fa-sliders text-emerald-600 dark:text-emerald-400"></i>
                                 <span>Saldo Inicial</span>
                                 <i id="cdb-toggle-icon" class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
                             </button>
 
-                            <!-- CAMPOS DE INVESTIMENTO INICIAL (OCULTOS POR PADRÃO) -->
                             <div id="cdb-initial-fields" class="hidden flex flex-wrap items-center gap-2">
-                                <div class="bg-slate-200/60 dark:bg-slate-900/60 p-2.5 rounded-xl border border-slate-300/60 dark:border-slate-700 flex items-center gap-2">
+                                <div class="bg-slate-200/80 dark:bg-slate-900/60 p-2.5 rounded-xl border border-slate-300/80 dark:border-slate-700 flex items-center gap-2">
                                     <label class="text-xs font-semibold text-slate-600 dark:text-slate-400">Saldo Inicial (R$):</label>
-                                    <input type="number" step="0.01" id="cdb-initial-amount" value="0" onchange="renderInvestChart()" class="w-24 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded px-2 py-1 text-xs text-slate-900 dark:text-white text-right font-bold focus:border-emerald-500" placeholder="0,00">
+                                    <input type="number" step="0.01" id="cdb-initial-amount" value="0" onchange="renderInvestChart()" autocomplete="off" class="w-24 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded px-2 py-1 text-xs text-slate-900 dark:text-white text-right font-bold focus:border-emerald-500" placeholder="0,00">
                                 </div>
 
-                                <div class="bg-slate-200/60 dark:bg-slate-900/60 p-2.5 rounded-xl border border-slate-300/60 dark:border-slate-700 flex items-center gap-2">
+                                <div class="bg-slate-200/80 dark:bg-slate-900/60 p-2.5 rounded-xl border border-slate-300/80 dark:border-slate-700 flex items-center gap-2">
                                     <label class="text-xs font-semibold text-slate-600 dark:text-slate-400">Data Inicial:</label>
-                                    <input type="month" id="cdb-initial-date" value="2026-01" onchange="renderInvestChart()" class="capitalize bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded px-2 py-1 text-xs text-slate-900 dark:text-white font-medium focus:border-emerald-500">
+                                    <input type="month" id="cdb-initial-date" value="2026-01" onchange="renderInvestChart()" autocomplete="off" class="capitalize bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded px-2 py-1 text-xs text-slate-900 dark:text-white font-medium focus:border-emerald-500">
                                 </div>
                             </div>
 
-                            <!-- Seletor do Período de Análise -->
-                            <div class="bg-slate-200/60 dark:bg-slate-900/60 p-2.5 rounded-xl border border-slate-300/60 dark:border-slate-700 flex items-center gap-2">
+                            <div class="bg-slate-200/80 dark:bg-slate-900/60 p-2.5 rounded-xl border border-slate-300/80 dark:border-slate-700 flex items-center gap-2">
                                 <label class="text-xs font-semibold text-slate-600 dark:text-slate-400">Período:</label>
-                                <select id="invest-range" onchange="renderInvestChart()" class="bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs rounded p-1 text-slate-900 dark:text-white font-medium">
+                                <select id="invest-range" onchange="renderInvestChart()" class="bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs rounded p-1 text-slate-900 dark:text-white font-medium">
                                     <option value="6M_PAST">Últimos 6 Meses</option>
                                     <option value="12M_PAST">Últimos 12 Meses</option>
                                     <option value="6M_FUTURE">Próximos 6 Meses (Projeção)</option>
@@ -287,24 +356,23 @@
                                 </select>
                             </div>
 
-                            <!-- Taxa de Rendimento do CDB -->
-                            <div class="bg-slate-200/60 dark:bg-slate-900/60 p-2.5 rounded-xl border border-slate-300/60 dark:border-slate-700 flex items-center gap-2">
+                            <div class="bg-slate-200/80 dark:bg-slate-900/60 p-2.5 rounded-xl border border-slate-300/80 dark:border-slate-700 flex items-center gap-2">
                                 <label class="text-xs font-semibold text-slate-600 dark:text-slate-400">Taxa CDB (% a.a.):</label>
-                                <input type="number" step="0.01" id="cdb-rate" value="10.75" onchange="renderInvestChart()" class="w-16 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded px-2 py-1 text-xs text-slate-900 dark:text-white text-right font-bold focus:border-emerald-500">
+                                <input type="number" step="0.01" id="cdb-rate" value="10.75" onchange="renderInvestChart()" autocomplete="off" class="w-16 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded px-2 py-1 text-xs text-slate-900 dark:text-white text-right font-bold focus:border-emerald-500">
                             </div>
                         </div>
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                        <div class="bg-slate-200/40 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-300/60 dark:border-slate-700/50">
+                        <div class="bg-slate-200/60 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-300/80 dark:border-slate-700/50">
                             <span class="text-xs text-slate-500 dark:text-slate-400">Saldo Atual Aplicado (CDB)</span>
                             <p class="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1" id="cdb-total-balance">R$ 0,00</p>
                         </div>
-                        <div class="bg-slate-200/40 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-300/60 dark:border-slate-700/50">
+                        <div class="bg-slate-200/60 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-300/80 dark:border-slate-700/50">
                             <span class="text-xs text-slate-500 dark:text-slate-400">Estimativa Rendimento Mensal</span>
                             <p class="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-1" id="cdb-monthly-yield">R$ 0,00</p>
                         </div>
-                        <div class="bg-slate-200/40 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-300/60 dark:border-slate-700/50">
+                        <div class="bg-slate-200/60 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-300/80 dark:border-slate-700/50">
                             <span class="text-xs text-slate-500 dark:text-slate-400" id="cdb-projected-label">Projeção Saldo em 12 Meses</span>
                             <p class="text-2xl font-bold text-purple-600 dark:text-purple-400 mt-1" id="cdb-projected-val">R$ 0,00</p>
                         </div>
@@ -321,22 +389,21 @@
 
     <!-- MODAL GERENCIADOR DE CARTÕES DE CRÉDITO -->
     <div id="card-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-50 dark:bg-slate-800 border border-slate-300/70 dark:border-slate-700 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
-            <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-700 pb-3">
+        <div class="bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-slate-300/80 dark:border-slate-700 pb-3">
                 <h3 class="text-lg font-bold text-slate-900 dark:text-white">Meus Cartões de Crédito</h3>
                 <button onclick="closeCardManagerModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
 
-            <!-- Formulário Novo Cartão -->
-            <form onsubmit="handleSaveCard(event)" class="space-y-3 bg-slate-200/50 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-300/60 dark:border-slate-700">
+            <form onsubmit="handleSaveCard(event)" autocomplete="off" class="space-y-3 bg-slate-200/70 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-300/80 dark:border-slate-700">
                 <p class="text-xs font-semibold text-slate-600 dark:text-slate-400">Cadastrar Novo Cartão</p>
                 <div>
-                    <input type="text" id="card-nickname" placeholder="Apelido do Cartão (Ex: Nubank Roxo, Itaú Black)" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg p-2 text-slate-900 dark:text-white text-xs">
+                    <input type="text" id="card-nickname" placeholder="Apelido do Cartão (Ex: Nubank Roxo, Itaú Black)" required autocomplete="off" name="no-cardname" class="w-full bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg p-2 text-slate-900 dark:text-white text-xs">
                 </div>
                 <div class="flex gap-2">
                     <div class="flex-1">
                         <label class="block text-[10px] text-slate-500 mb-1">Dia Fechamento Fatura</label>
-                        <input type="number" id="card-closing-day" min="1" max="31" placeholder="Ex: 4" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg p-2 text-slate-900 dark:text-white text-xs">
+                        <input type="number" id="card-closing-day" min="1" max="31" placeholder="Ex: 4" required autocomplete="off" name="no-closingday" class="w-full bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg p-2 text-slate-900 dark:text-white text-xs">
                     </div>
                     <button type="submit" class="self-end bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
                         Adicionar
@@ -344,7 +411,6 @@
                 </div>
             </form>
 
-            <!-- Lista de Cartões Cadastrados -->
             <div>
                 <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Cartões Cadastrados</p>
                 <div id="cards-list" class="space-y-2 max-h-48 overflow-y-auto">
@@ -356,19 +422,19 @@
 
     <!-- MODAL NOVO/EDITAR LANÇAMENTO -->
     <div id="entry-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-50 dark:bg-slate-800 border border-slate-300/70 dark:border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
-            <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-700 pb-3">
+        <div class="bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-slate-300/80 dark:border-slate-700 pb-3">
                 <h3 class="text-lg font-bold text-slate-900 dark:text-white" id="modal-title">Novo Lançamento</h3>
                 <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
 
-            <form id="entry-form" onsubmit="handleSaveEntry(event)" class="space-y-4">
+            <form id="entry-form" onsubmit="handleSaveEntry(event)" autocomplete="off" class="space-y-4">
                 <input type="hidden" id="editing-id" value="">
 
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Tipo</label>
-                        <select id="entry-type" onchange="updateCategories()" class="w-full bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg p-2.5 text-slate-900 dark:text-white text-sm">
+                        <select id="entry-type" onchange="updateCategories()" class="w-full bg-slate-200/80 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg p-2.5 text-slate-900 dark:text-white text-sm">
                             <option value="ENTRADA">Entrada (Ganho)</option>
                             <option value="SAIDA">Saída (Gasto)</option>
                             <option value="INVESTIMENTO">Aporte CDB / Investimento</option>
@@ -377,7 +443,7 @@
                     </div>
                     <div>
                         <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Classificação</label>
-                        <select id="entry-category" class="w-full bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg p-2.5 text-slate-900 dark:text-white text-sm">
+                        <select id="entry-category" class="w-full bg-slate-200/80 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg p-2.5 text-slate-900 dark:text-white text-sm">
                             <!-- Preenchido por JS -->
                         </select>
                     </div>
@@ -385,30 +451,30 @@
 
                 <div>
                     <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Descrição / Especificação</label>
-                    <input type="text" id="entry-desc" placeholder="Ex: Supermercado, Salário, Internet, CDB Itaú" required class="w-full bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg p-2.5 text-slate-900 dark:text-white text-sm">
+                    <input type="text" id="entry-desc" placeholder="Ex: Supermercado, Salário, Internet, CDB Itaú" required autocomplete="off" name="no-desc" class="w-full bg-slate-200/80 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg p-2.5 text-slate-900 dark:text-white text-sm">
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Valor (R$)</label>
-                        <input type="number" step="0.01" id="entry-amount" placeholder="0,00" required class="w-full bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg p-2.5 text-slate-900 dark:text-white text-sm">
+                        <input type="number" step="0.01" id="entry-amount" placeholder="0,00" required autocomplete="off" name="no-amount" class="w-full bg-slate-200/80 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg p-2.5 text-slate-900 dark:text-white text-sm">
                     </div>
                     <div>
                         <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Data do Registro</label>
-                        <input type="date" id="entry-date" required class="w-full bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg p-2.5 text-slate-900 dark:text-white text-sm">
+                        <input type="date" id="entry-date" required autocomplete="off" name="no-date" class="w-full bg-slate-200/80 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg p-2.5 text-slate-900 dark:text-white text-sm">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Método de Pagamento</label>
-                        <select id="entry-method" onchange="toggleCreditOptions()" class="w-full bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg p-2.5 text-slate-900 dark:text-white text-sm">
-                            <!-- Preenchido dinamicamente por JS conforme o tipo selecionado -->
+                        <select id="entry-method" onchange="toggleCreditOptions()" class="w-full bg-slate-200/80 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg p-2.5 text-slate-900 dark:text-white text-sm">
+                            <!-- Preenchido por JS -->
                         </select>
                     </div>
                     <div id="credit-card-select-container" class="hidden">
                         <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Selecione o Cartão</label>
-                        <select id="entry-card-id" class="w-full bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg p-2.5 text-slate-900 dark:text-white text-sm">
+                        <select id="entry-card-id" class="w-full bg-slate-200/80 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg p-2.5 text-slate-900 dark:text-white text-sm">
                             <!-- Populado dinamicamente -->
                         </select>
                     </div>
@@ -416,10 +482,10 @@
 
                 <div id="installments-container" class="hidden">
                     <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Nº de Parcelas</label>
-                    <input type="number" id="entry-installments" min="1" max="48" value="1" class="w-full bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg p-2.5 text-slate-900 dark:text-white text-sm">
+                    <input type="number" id="entry-installments" min="1" max="48" value="1" autocomplete="off" name="no-installments" class="w-full bg-slate-200/80 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg p-2.5 text-slate-900 dark:text-white text-sm">
                 </div>
 
-                <div class="bg-slate-200/50 dark:bg-slate-900/40 p-3 rounded-lg border border-slate-300/60 dark:border-slate-700/40 text-xs text-slate-500 dark:text-slate-400">
+                <div class="bg-slate-200/80 dark:bg-slate-900/40 p-3 rounded-lg border border-slate-300/80 dark:border-slate-700/40 text-xs text-slate-500 dark:text-slate-400">
                     <i class="fa-solid fa-circle-info text-blue-500"></i> Registro atribuído a: <strong id="entry-author-display" class="text-slate-800 dark:text-white">MATHEUS</strong>
                 </div>
 
@@ -432,9 +498,7 @@
 
     <!-- JAVASCRIPT -->
     <script>
-        // ============================================================
-        //                  CONFIGURAÇÃO DO FIREBASE
-        // ============================================================
+        // CONFIGURAÇÃO DO FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyC_YBBpO6mlW7OWnXiG13lARLxJvgJtuaY",
             authDomain: "controle-financeiro-eb619.firebaseapp.com",
@@ -445,7 +509,6 @@
             measurementId: "G-446JVFPXYX"
         };
 
-        // Inicializa o Firebase
         let db = null;
         if (firebaseConfig.apiKey !== "SUA_API_KEY_AQUI") {
             firebase.initializeApp(firebaseConfig);
@@ -455,12 +518,20 @@
         let currentUser = null;
         let creditCards = [];
         let transactions = [];
+        
+        // ESTADO DOS FILTROS DAS COLUNAS
+        let columnFilters = {
+            date: '',
+            desc: '',
+            category: '',
+            method: '',
+            user: '',
+            amount: ''
+        };
 
-        // ESCUTAR BANCO DE DADOS EM TEMPO REAL
         function initFirebaseListeners() {
             if (!db) return;
 
-            // Escuta mudanças nos Cartões de Crédito
             db.collection('creditCards').onSnapshot(snapshot => {
                 creditCards = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 updateCreditCardsDropdown();
@@ -469,14 +540,12 @@
                 }
             }, err => console.error("Erro ao ouvir cartões:", err));
 
-            // Escuta mudanças nos Lançamentos Financeiros
             db.collection('transactions').onSnapshot(snapshot => {
                 transactions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 updateViews();
             }, err => console.error("Erro ao ouvir lançamentos:", err));
         }
 
-        // Alternar exibição dos campos de saldo inicial do CDB
         function toggleInitialCdbFields() {
             const fieldsContainer = document.getElementById('cdb-initial-fields');
             const icon = document.getElementById('cdb-toggle-icon');
@@ -488,7 +557,6 @@
             }
         }
 
-        // Formatação Numérica com 2 Casas Decimais
         function formatCurrency(val) {
             return `R$ ${Number(val || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
         }
@@ -500,7 +568,6 @@
             return dateStr;
         }
 
-        // Formatação de Mês com Primeira Letra Maiúscula (Ex: Janeiro de 2026)
         function formatMonthCapitalized(monthStr) {
             if (!monthStr) return '';
             const [year, month] = monthStr.split('-').map(Number);
@@ -515,6 +582,59 @@
             const yyyy = d.getFullYear();
             const mm = String(d.getMonth() + 1).padStart(2, '0');
             return `${yyyy}-${mm}`;
+        }
+
+        // CONTROLE DOS MENUS DE FILTRO DE COLUNA
+        function toggleFilterMenu(columnKey) {
+            const keys = ['date', 'desc', 'category', 'method', 'user', 'amount'];
+            keys.forEach(k => {
+                const el = document.getElementById(`filter-menu-${k}`);
+                if (k === columnKey) {
+                    el.classList.toggle('hidden');
+                } else {
+                    el.classList.add('hidden');
+                }
+            });
+        }
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('th')) {
+                const keys = ['date', 'desc', 'category', 'method', 'user', 'amount'];
+                keys.forEach(k => {
+                    const el = document.getElementById(`filter-menu-${k}`);
+                    if (el) el.classList.add('hidden');
+                });
+            }
+        });
+
+        function applyColumnFilters() {
+            columnFilters.date = document.getElementById('col-filter-date').value;
+            columnFilters.desc = document.getElementById('col-filter-desc').value;
+            columnFilters.category = document.getElementById('col-filter-category').value;
+            columnFilters.method = document.getElementById('col-filter-method').value;
+            columnFilters.user = document.getElementById('col-filter-user').value;
+            columnFilters.amount = document.getElementById('col-filter-amount').value;
+
+            const hasActiveFilter = Object.values(columnFilters).some(v => v !== '');
+            const clearBtn = document.getElementById('clear-filters-btn');
+            if (hasActiveFilter) {
+                clearBtn.classList.remove('hidden');
+            } else {
+                clearBtn.classList.add('hidden');
+            }
+
+            updateViews();
+        }
+
+        function clearTableFilters() {
+            columnFilters = { date: '', desc: '', category: '', method: '', user: '', amount: '' };
+            const keys = ['date', 'desc', 'category', 'method', 'user', 'amount'];
+            keys.forEach(k => {
+                const sel = document.getElementById(`col-filter-${k}`);
+                if (sel) sel.value = '';
+            });
+            document.getElementById('clear-filters-btn').classList.add('hidden');
+            updateViews();
         }
 
         // LOGIN
@@ -549,7 +669,6 @@
             document.getElementById('login-modal').classList.remove('hidden');
         }
 
-        // ALTERNÂNCIA DE TEMA
         function toggleTheme() {
             const html = document.documentElement;
             const icon = document.getElementById('theme-icon');
@@ -562,20 +681,18 @@
             }
         }
 
-        // TABS
         function switchTab(tab) {
             ['dre', 'dash', 'invest'].forEach(t => {
                 document.getElementById(`tab-${t}`).classList.add('hidden');
-                document.getElementById(`nav-${t}`).className = 'w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-slate-700/30 text-left transition';
+                document.getElementById(`nav-${t}`).className = 'w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700/30 text-left transition';
             });
             document.getElementById(`tab-${tab}`).classList.remove('hidden');
-            document.getElementById(`nav-${tab}`).className = 'w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-slate-700/50 text-left transition';
+            document.getElementById(`nav-${tab}`).className = 'w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-emerald-700 dark:text-emerald-400 bg-emerald-100/70 dark:bg-slate-700/50 text-left transition';
             
             if(tab === 'dash') renderDashboardCharts();
             if(tab === 'invest') renderInvestChart();
         }
 
-        // GERENCIAMENTO DE CARTÕES DE CRÉDITO
         function openCardManagerModal() {
             renderCardsList();
             document.getElementById('card-modal').classList.remove('hidden');
@@ -597,7 +714,7 @@
 
             userCards.forEach(c => {
                 container.innerHTML += `
-                    <div class="flex items-center justify-between bg-slate-200/60 dark:bg-slate-900 p-2.5 rounded-lg text-xs">
+                    <div class="flex items-center justify-between bg-slate-200/80 dark:bg-slate-900 p-2.5 rounded-lg text-xs">
                         <div>
                             <p class="font-bold text-slate-800 dark:text-white">${c.nickname}</p>
                             <p class="text-[10px] text-slate-500">Fecha dia: ${c.closingDay}</p>
@@ -659,7 +776,6 @@
             });
         }
 
-        // MODAL LANÇAMENTO
         function openModal(editId = null) {
             document.getElementById('entry-author-display').innerText = currentUser;
             document.getElementById('editing-id').value = editId || '';
@@ -779,7 +895,7 @@
             return `${yyyy}-${mm}`;
         }
 
-        // SALVAR LANÇAMENTO
+        // SALVAR LANÇAMENTO (COM IDENTIFICADOR DE GRUPO DE PARCELAS)
         async function handleSaveEntry(e) {
             e.preventDefault();
             const editId = document.getElementById('editing-id').value;
@@ -800,6 +916,7 @@
                     });
                 } else {
                     if (method === 'CREDITO' && installments > 1 && type === 'SAIDA') {
+                        const groupId = 'group_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
                         const installmentAmount = rawAmount / installments;
                         let baseDate = new Date(dateStr + 'T00:00:00');
                         const batch = db.batch();
@@ -821,6 +938,7 @@
                                 method: method,
                                 cardId: cardId,
                                 monthRef: monthRef,
+                                groupId: groupId,
                                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
                             });
                         }
@@ -842,16 +960,62 @@
                     }
                 }
             } else {
-                // Fallback Local sem BD
                 const monthRef = calculateMonthRef(dateStr, method, currentUser, cardId);
-                transactions.push({ id: String(Date.now()), user: currentUser, type, category, desc, amount: rawAmount, date: dateStr, method, cardId, monthRef });
+                const groupId = (method === 'CREDITO' && installments > 1) ? ('group_' + Date.now()) : null;
+                
+                if (method === 'CREDITO' && installments > 1 && type === 'SAIDA') {
+                    const installmentAmount = rawAmount / installments;
+                    let baseDate = new Date(dateStr + 'T00:00:00');
+                    for (let i = 0; i < installments; i++) {
+                        let pDate = new Date(baseDate);
+                        pDate.setMonth(pDate.getMonth() + i);
+                        const pDateStr = pDate.toISOString().split('T')[0];
+                        const mRef = calculateMonthRef(pDateStr, method, currentUser, cardId);
+                        transactions.push({
+                            id: String(Date.now() + i),
+                            user: currentUser,
+                            type, category,
+                            desc: `${desc} (${i + 1}/${installments})`,
+                            amount: installmentAmount,
+                            date: pDateStr,
+                            method, cardId,
+                            monthRef: mRef,
+                            groupId: groupId
+                        });
+                    }
+                } else {
+                    transactions.push({ id: String(Date.now()), user: currentUser, type, category, desc, amount: rawAmount, date: dateStr, method, cardId, monthRef });
+                }
                 updateViews();
             }
 
             closeModal();
         }
 
+        // EXCLUSÃO INTELIGENTE DE PARCELAS / LANÇAMENTOS
         async function deleteEntry(id) {
+            const item = transactions.find(t => String(t.id) === String(id));
+            if (!item) return;
+
+            if (item.groupId) {
+                const choice = confirm("Este lançamento faz parte de uma compra parcelada!\n\nClique em [OK] para excluir TODAS as parcelas deste lançamento.\nClique em [Cancelar] se desejar excluir apenas ESTA parcela individual.");
+                if (choice) {
+                    // Excluir todas do grupo
+                    const groupItems = transactions.filter(t => t.groupId === item.groupId);
+                    if (db) {
+                        const batch = db.batch();
+                        groupItems.forEach(gi => {
+                            batch.delete(db.collection('transactions').doc(gi.id));
+                        });
+                        await batch.commit();
+                    } else {
+                        transactions = transactions.filter(t => t.groupId !== item.groupId);
+                        updateViews();
+                    }
+                    return;
+                }
+            }
+
             if (confirm("Tem certeza que deseja excluir este lançamento?")) {
                 if (db) {
                     await db.collection('transactions').doc(id).delete();
@@ -862,7 +1026,6 @@
             }
         }
 
-        // CÁLCULO DE SALDO ANTERIOR CARREGADO AUTOMATICAMENTE
         function getPreviousAccumulatedBalance(targetMonthStr, selectedUser) {
             let balance = 0;
             transactions.forEach(t => {
@@ -876,17 +1039,60 @@
             return balance;
         }
 
-        // ATUALIZAÇÃO DA TELA E DRE
+        // POPULAR OPÇÕES DOS FILTROS DE COLUNA
+        function populateFilterDropdowns(baseMonthFiltered) {
+            const keys = ['date', 'desc', 'category', 'method', 'user', 'amount'];
+            
+            keys.forEach(k => {
+                const select = document.getElementById(`col-filter-${k}`);
+                if (!select) return;
+                const currentVal = select.value;
+
+                let uniqueValues = new Set();
+                baseMonthFiltered.forEach(t => {
+                    if (k === 'date') uniqueValues.add(formatDateBR(t.date));
+                    else if (k === 'desc') uniqueValues.add(t.desc);
+                    else if (k === 'category') uniqueValues.add(t.category);
+                    else if (k === 'method') uniqueValues.add(t.method);
+                    else if (k === 'user') uniqueValues.add(t.user);
+                    else if (k === 'amount') uniqueValues.add(formatCurrency(t.amount));
+                });
+
+                const sortedVals = Array.from(uniqueValues).sort();
+                select.innerHTML = '<option value="">(Todos)</option>';
+                sortedVals.forEach(v => {
+                    select.innerHTML += `<option value="${v}">${v}</option>`;
+                });
+                select.value = currentVal;
+            });
+        }
+
+        // ATUALIZAÇÃO DA TELA E CÁLCULO DINÂMICO
         function updateViews() {
             const selectedMonth = document.getElementById('selected-month').value;
             const selectedUser = document.getElementById('filter-user').value;
 
             document.getElementById('formatted-selected-month').innerText = formatMonthCapitalized(selectedMonth);
 
-            const filtered = transactions.filter(t => {
+            // 1. Filtragem Base por Mês e Usuário
+            const baseMonthFiltered = transactions.filter(t => {
                 const matchMonth = t.monthRef === selectedMonth;
                 const matchUser = selectedUser === 'ALL' || t.user === selectedUser;
                 return matchMonth && matchUser;
+            });
+
+            // Atualizar listas dos menus de filtro das colunas
+            populateFilterDropdowns(baseMonthFiltered);
+
+            // 2. Filtragem Secundária das Colunas na Tabela
+            const tableFiltered = baseMonthFiltered.filter(t => {
+                if (columnFilters.date && formatDateBR(t.date) !== columnFilters.date) return false;
+                if (columnFilters.desc && t.desc !== columnFilters.desc) return false;
+                if (columnFilters.category && t.category !== columnFilters.category) return false;
+                if (columnFilters.method && t.method !== columnFilters.method) return false;
+                if (columnFilters.user && t.user !== columnFilters.user) return false;
+                if (columnFilters.amount && formatCurrency(t.amount) !== columnFilters.amount) return false;
+                return true;
             });
 
             let totalEntradas = 0;
@@ -896,7 +1102,8 @@
             const tbody = document.getElementById('dre-table-body');
             tbody.innerHTML = '';
 
-            filtered.forEach(t => {
+            // Cálculos dinâmicos baseados no que ESTÁ SENDO VISUALIZADO (tableFiltered)
+            tableFiltered.forEach(t => {
                 if (t.type === 'ENTRADA' || t.type === 'RESGATE') totalEntradas += t.amount;
                 if (t.type === 'SAIDA' && t.category === 'Saída Essencial') totalEssenciais += t.amount;
                 if (t.type === 'SAIDA' && t.category === 'Saída Não Essencial') totalNaoEssenciais += t.amount;
@@ -905,7 +1112,7 @@
                 const amountColor = (t.type === 'ENTRADA' || t.type === 'RESGATE') ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-800 dark:text-slate-200';
 
                 tbody.innerHTML += `
-                    <tr class="hover:bg-slate-200/50 dark:hover:bg-slate-700/20 transition">
+                    <tr class="hover:bg-slate-200/80 dark:hover:bg-slate-700/20 transition">
                         <td class="p-3 text-xs text-slate-500 dark:text-slate-400 font-mono">${formatDateBR(t.date)}</td>
                         <td class="p-3 font-medium text-slate-900 dark:text-white">${t.desc}</td>
                         <td class="p-3 text-xs text-slate-500 dark:text-slate-400">${t.category}</td>
@@ -930,14 +1137,13 @@
             const saldoAnterior = getPreviousAccumulatedBalance(selectedMonth, selectedUser);
             const saldoFinalAcumulado = saldoAnterior + resultadoLiquidoMes;
 
-            // Atualização dos KPIs
+            // Recálculo dinâmico dos KPIs e Fechamento do Mês
             document.getElementById('kpi-entradas').innerText = formatCurrency(totalEntradas);
             document.getElementById('kpi-essenciais').innerText = formatCurrency(totalEssenciais);
             document.getElementById('kpi-nao-essenciais').innerText = formatCurrency(totalNaoEssenciais);
             document.getElementById('kpi-resultado').innerText = formatCurrency(resultadoLiquidoMes);
             document.getElementById('kpi-resultado').className = `text-2xl font-bold mt-2 ${resultadoLiquidoMes >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-500'}`;
 
-            // Preenchimento das Linhas de Subtração na DRE
             const subtotalAposEssenciais = totalEntradas - totalEssenciais;
             document.getElementById('dre-calc-ganhos').innerText = formatCurrency(totalEntradas);
             document.getElementById('dre-calc-essenciais').innerText = formatCurrency(totalEssenciais);
@@ -951,7 +1157,7 @@
             if (!document.getElementById('tab-invest').classList.contains('hidden')) renderInvestChart();
         }
 
-        // INSTÂNCIAS DE GRÁFICOS
+        // GRÁFICOS DO DASHBOARD
         let chartTimeline12mInstance = null;
         let chart503020Instance = null;
         let chartTopExpensesInstance = null;
@@ -961,7 +1167,6 @@
             const selectedMonth = document.getElementById('selected-month').value;
             const selectedUser = document.getElementById('filter-user').value;
 
-            // 1. GRÁFICO DA LINHA DO TEMPO
             const [curYear, curMonth] = selectedMonth.split('-').map(Number);
             const monthsList = [];
             for (let i = 11; i >= 0; i--) {
@@ -1023,20 +1228,13 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
-                        x: {
-                            grid: { display: false },
-                            ticks: { color: '#94a3b8' }
-                        },
-                        y: {
-                            display: false,
-                            grid: { display: false }
-                        }
+                        x: { grid: { display: false }, ticks: { color: '#94a3b8' } },
+                        y: { display: false, grid: { display: false } }
                     },
                     plugins: { legend: { labels: { color: '#94a3b8' } } }
                 }
             });
 
-            // 2. GRÁFICO DISTRIBUIÇÃO DE GASTOS
             const monthTx = transactions.filter(t => t.monthRef === selectedMonth && (selectedUser === 'ALL' || t.user === selectedUser));
             const essenciais = monthTx.filter(t => t.category === 'Saída Essencial').reduce((acc, t) => acc + t.amount, 0);
             const naoEssenciais = monthTx.filter(t => t.category === 'Saída Não Essencial').reduce((acc, t) => acc + t.amount, 0);
@@ -1090,13 +1288,10 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false }
-                    }
+                    plugins: { legend: { display: false } }
                 }
             });
 
-            // 3. GRÁFICO MAIORES DESPESAS DO MÊS
             const expenseMap = {};
             monthTx.filter(t => t.type === 'SAIDA').forEach(t => {
                 expenseMap[t.desc] = (expenseMap[t.desc] || 0) + t.amount;
@@ -1143,30 +1338,17 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    layout: {
-                        padding: {
-                            top: 25
-                        }
-                    },
+                    layout: { padding: { top: 25 } },
                     scales: {
-                        x: {
-                            grid: { display: false },
-                            ticks: { color: '#94a3b8' }
-                        },
-                        y: {
-                            display: false,
-                            grid: { display: false },
-                            grace: '15%'
-                        }
+                        x: { grid: { display: false }, ticks: { color: '#94a3b8' } },
+                        y: { display: false, grid: { display: false }, grace: '15%' }
                     },
-                    plugins: {
-                        legend: { display: false }
-                    }
+                    plugins: { legend: { display: false } }
                 }
             });
         }
 
-        // CÁLCULO E EVOLUÇÃO REALISTA DO CDB
+        // GRÁFICO DE INVESTIMENTOS CDB
         function renderInvestChart() {
             const selectedUser = document.getElementById('filter-user').value;
             const rangeType = document.getElementById('invest-range').value;
@@ -1175,7 +1357,6 @@
             const initialAmount = parseFloat(document.getElementById('cdb-initial-amount').value) || 0;
             const initialDateStr = document.getElementById('cdb-initial-date').value;
 
-            // Saldo do CDB acumulado até o mês selecionado
             let currentCdbBalance = 0;
 
             if (initialAmount > 0 && initialDateStr && initialDateStr <= selectedMonth) {
@@ -1198,7 +1379,6 @@
             document.getElementById('cdb-total-balance').innerText = formatCurrency(currentCdbBalance);
             document.getElementById('cdb-monthly-yield').innerText = formatCurrency(rendimentoMensal);
 
-            // Construção dos dados considerando o Saldo Inicial e Resgates Futuros
             const labels = [];
             const dataProj = [];
             const [selYear, selMonth] = selectedMonth.split('-').map(Number);
