@@ -21,35 +21,70 @@
         }
     </script>
 
-    <!-- ESTILOS EXPLICITOS PARA O MODO CLARO EM TONS DE AZUL SUAVE -->
+    <!-- SOBRESCRITA GLOBAL DE CORES PARA O MODO CLARO -->
     <style>
+        /* Quando NÃO estiver no dark mode, força a paleta de cinzas a virar tons de azul celeste */
+        html:not(.dark) {
+            --bg-main: #bae6fd;      /* Fundo geral (sky-200) */
+            --bg-card: #f0f9ff;      /* Cards e modais (sky-50) */
+            --bg-subcard: #e0f2fe;   /* Subcards e tabelas (sky-100) */
+            --bg-aside: #7dd3fc;     /* Sidebar (sky-300) */
+            --border-color: #38bdf8; /* Bordas (sky-400) */
+            --text-main: #0c4a6e;    /* Texto principal (sky-900) */
+            --text-muted: #0369a1;   /* Texto secundário (sky-700) */
+        }
+
         html:not(.dark) body {
-            background-color: #dbeafe !important; /* Azul celeste bem suave */
-            color: #0f172a !important;
+            background-color: var(--bg-main) !important;
+            color: var(--text-main) !important;
         }
+
         html:not(.dark) aside {
-            background-color: #bfdbfe !important; /* Azul lateral de destaque */
-            border-color: #93c5fd !important;
+            background-color: var(--bg-aside) !important;
+            border-color: var(--border-color) !important;
         }
-        html:not(.dark) .bg-card-custom {
-            background-color: #eff6ff !important; /* Cards internos azul clarinho */
-            border-color: #93c5fd !important;
+
+        html:not(.dark) .bg-sky-50, 
+        html:not(.dark) .bg-sky-50\/90,
+        html:not(.dark) .bg-white {
+            background-color: var(--bg-card) !important;
         }
-        html:not(.dark) .bg-subcard-custom {
-            background-color: #dbeafe !important;
-            border-color: #93c5fd !important;
+
+        html:not(.dark) .bg-sky-100, 
+        html:not(.dark) .bg-sky-100\/70,
+        html:not(.dark) .bg-sky-100\/80,
+        html:not(.dark) .bg-sky-100\/90,
+        html:not(.dark) .bg-sky-200\/60,
+        html:not(.dark) .bg-sky-200\/70 {
+            background-color: var(--bg-subcard) !important;
         }
+
+        html:not(.dark) .border-sky-200,
+        html:not(.dark) .border-sky-200\/80,
+        html:not(.dark) .border-sky-300,
+        html:not(.dark) .border-sky-300\/60,
+        html:not(.dark) .border-sky-300\/70,
+        html:not(.dark) .border-sky-300\/80 {
+            border-color: var(--border-color) !important;
+        }
+
         html:not(.dark) thead {
-            background-color: #bfdbfe !important;
-            color: #1e3a8a !important;
+            background-color: #7dd3fc !important;
         }
-        html:not(.dark) tr:hover {
-            background-color: #dbeafe !important;
+
+        html:not(.dark) thead th {
+            color: #0369a1 !important;
         }
-        html:not(.dark) input, html:not(.dark) select {
-            background-color: #ffffff !important;
-            border-color: #93c5fd !important;
-            color: #0f172a !important;
+
+        html:not(.dark) .text-slate-900,
+        html:not(.dark) .text-slate-800,
+        html:not(.dark) .text-slate-700 {
+            color: var(--text-main) !important;
+        }
+
+        html:not(.dark) .text-slate-600,
+        html:not(.dark) .text-slate-500 {
+            color: var(--text-muted) !important;
         }
     </style>
 </head>
@@ -57,7 +92,7 @@
 
     <!-- TELA DE LOGIN -->
     <div id="login-modal" class="fixed inset-0 bg-slate-950/90 z-50 flex items-center justify-center p-4">
-        <div class="bg-card-custom dark:bg-slate-800 p-8 rounded-2xl shadow-2xl border border-sky-300 dark:border-slate-700 max-w-md w-full">
+        <div class="bg-sky-50 dark:bg-slate-800 p-8 rounded-2xl shadow-2xl border border-sky-300 dark:border-slate-700 max-w-md w-full">
             <div class="text-center mb-8">
                 <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 mb-3">
                     <i class="fa-solid fa-wallet text-3xl"></i>
@@ -101,7 +136,7 @@
                 </div>
 
                 <!-- Perfil do Usuário Logado -->
-                <div class="bg-subcard-custom dark:bg-slate-900/60 p-3 rounded-xl border border-sky-300 dark:border-slate-700/50 mb-6 flex items-center justify-between shadow-sm">
+                <div class="bg-sky-100 dark:bg-slate-900/60 p-3 rounded-xl border border-sky-300 dark:border-slate-700/50 mb-6 flex items-center justify-between shadow-sm">
                     <div class="flex items-center gap-3">
                         <div id="user-avatar" class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-white bg-blue-600">
                             M
@@ -146,17 +181,14 @@
                 </div>
                 
                 <div class="flex flex-wrap items-center gap-3">
-                    <!-- Seleção de Mês / Ano -->
                     <input type="month" id="selected-month" onchange="updateViews()" class="capitalize border border-sky-300 dark:border-slate-700 text-slate-900 dark:text-white text-sm rounded-lg p-2.5 outline-none focus:border-emerald-500 shadow-sm">
                     
-                    <!-- Filtro por Usuário -->
                     <select id="filter-user" onchange="updateViews()" class="border border-sky-300 dark:border-slate-700 text-slate-900 dark:text-white text-sm rounded-lg p-2.5 outline-none focus:border-emerald-500 shadow-sm">
                         <option value="ALL">CASAL (Consolidado)</option>
                         <option value="MATHEUS">MATHEUS</option>
                         <option value="RHAUANE">RHAUANE</option>
                     </select>
 
-                    <!-- Botão Novo Lançamento -->
                     <button onclick="openModal()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold px-4 py-2.5 rounded-lg flex items-center gap-2 transition shadow-lg shadow-emerald-600/20">
                         <i class="fa-solid fa-plus"></i> Novo Lançamento
                     </button>
@@ -165,19 +197,19 @@
 
             <!-- CARDS DE RESUMO (KPIs) -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                <div class="bg-card-custom dark:bg-slate-800/80 border border-sky-300 dark:border-slate-700/60 rounded-2xl p-5 shadow-sm">
+                <div class="bg-sky-50 dark:bg-slate-800/80 border border-sky-300 dark:border-slate-700/60 rounded-2xl p-5 shadow-sm">
                     <p class="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold">Total Entradas</p>
                     <p class="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-2" id="kpi-entradas">R$ 0,00</p>
                 </div>
-                <div class="bg-card-custom dark:bg-slate-800/80 border border-sky-300 dark:border-slate-700/60 rounded-2xl p-5 shadow-sm">
+                <div class="bg-sky-50 dark:bg-slate-800/80 border border-sky-300 dark:border-slate-700/60 rounded-2xl p-5 shadow-sm">
                     <p class="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold">Saídas Essenciais</p>
                     <p class="text-2xl font-bold text-amber-600 dark:text-amber-400 mt-2" id="kpi-essenciais">R$ 0,00</p>
                 </div>
-                <div class="bg-card-custom dark:bg-slate-800/80 border border-sky-300 dark:border-slate-700/60 rounded-2xl p-5 shadow-sm">
+                <div class="bg-sky-50 dark:bg-slate-800/80 border border-sky-300 dark:border-slate-700/60 rounded-2xl p-5 shadow-sm">
                     <p class="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold">Saídas Não Essenciais</p>
                     <p class="text-2xl font-bold text-rose-600 dark:text-rose-400 mt-2" id="kpi-nao-essenciais">R$ 0,00</p>
                 </div>
-                <div class="bg-card-custom dark:bg-slate-800/80 border border-sky-300 dark:border-slate-700/60 rounded-2xl p-5 shadow-sm">
+                <div class="bg-sky-50 dark:bg-slate-800/80 border border-sky-300 dark:border-slate-700/60 rounded-2xl p-5 shadow-sm">
                     <p class="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold">Resultado Líquido Mês</p>
                     <p class="text-2xl font-bold text-slate-900 dark:text-white mt-2" id="kpi-resultado">R$ 0,00</p>
                 </div>
@@ -185,7 +217,7 @@
 
             <!-- TAB 1: DRE MENSAL -->
             <section id="tab-dre" class="space-y-6">
-                <div class="bg-card-custom dark:bg-slate-800/60 border border-sky-300 dark:border-slate-700/50 rounded-2xl p-6 shadow-sm">
+                <div class="bg-sky-50 dark:bg-slate-800/60 border border-sky-300 dark:border-slate-700/50 rounded-2xl p-6 shadow-sm">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
                             <i class="fa-solid fa-bars-staggered text-emerald-600 dark:text-emerald-400"></i> Lançamentos do Mês
@@ -199,15 +231,12 @@
                         <table class="w-full text-left text-sm text-slate-700 dark:text-slate-300">
                             <thead class="dark:bg-slate-900/70 text-slate-700 dark:text-slate-400 uppercase text-xs">
                                 <tr>
-                                    <!-- FILTROS MULTI-SELEÇÃO COM CHECKBOXES -->
                                     <th class="p-3 relative">
                                         <div class="flex items-center justify-between gap-1">
                                             <span>Data</span>
                                             <button onclick="toggleFilterMenu('date')" class="text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 p-1"><i class="fa-solid fa-chevron-down text-[10px]"></i></button>
                                         </div>
-                                        <div id="filter-menu-date" class="hidden absolute top-full left-0 mt-1 bg-card-custom dark:bg-slate-800 border border-sky-300 dark:border-slate-700 rounded-lg shadow-xl p-2 z-20 min-w-[170px] normal-case font-normal text-xs space-y-1 max-h-48 overflow-y-auto">
-                                            <!-- Populado via JS -->
-                                        </div>
+                                        <div id="filter-menu-date" class="hidden absolute top-full left-0 mt-1 bg-sky-50 dark:bg-slate-800 border border-sky-300 dark:border-slate-700 rounded-lg shadow-xl p-2 z-20 min-w-[170px] normal-case font-normal text-xs space-y-1 max-h-48 overflow-y-auto"></div>
                                     </th>
 
                                     <th class="p-3 relative">
@@ -215,9 +244,7 @@
                                             <span>Descrição</span>
                                             <button onclick="toggleFilterMenu('desc')" class="text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 p-1"><i class="fa-solid fa-chevron-down text-[10px]"></i></button>
                                         </div>
-                                        <div id="filter-menu-desc" class="hidden absolute top-full left-0 mt-1 bg-card-custom dark:bg-slate-800 border border-sky-300 dark:border-slate-700 rounded-lg shadow-xl p-2 z-20 min-w-[200px] normal-case font-normal text-xs space-y-1 max-h-48 overflow-y-auto">
-                                            <!-- Populado via JS -->
-                                        </div>
+                                        <div id="filter-menu-desc" class="hidden absolute top-full left-0 mt-1 bg-sky-50 dark:bg-slate-800 border border-sky-300 dark:border-slate-700 rounded-lg shadow-xl p-2 z-20 min-w-[200px] normal-case font-normal text-xs space-y-1 max-h-48 overflow-y-auto"></div>
                                     </th>
 
                                     <th class="p-3 relative">
@@ -225,9 +252,7 @@
                                             <span>Classificação</span>
                                             <button onclick="toggleFilterMenu('category')" class="text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 p-1"><i class="fa-solid fa-chevron-down text-[10px]"></i></button>
                                         </div>
-                                        <div id="filter-menu-category" class="hidden absolute top-full left-0 mt-1 bg-card-custom dark:bg-slate-800 border border-sky-300 dark:border-slate-700 rounded-lg shadow-xl p-2 z-20 min-w-[180px] normal-case font-normal text-xs space-y-1 max-h-48 overflow-y-auto">
-                                            <!-- Populado via JS -->
-                                        </div>
+                                        <div id="filter-menu-category" class="hidden absolute top-full left-0 mt-1 bg-sky-50 dark:bg-slate-800 border border-sky-300 dark:border-slate-700 rounded-lg shadow-xl p-2 z-20 min-w-[180px] normal-case font-normal text-xs space-y-1 max-h-48 overflow-y-auto"></div>
                                     </th>
 
                                     <th class="p-3 relative">
@@ -235,9 +260,7 @@
                                             <span>Método</span>
                                             <button onclick="toggleFilterMenu('method')" class="text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 p-1"><i class="fa-solid fa-chevron-down text-[10px]"></i></button>
                                         </div>
-                                        <div id="filter-menu-method" class="hidden absolute top-full left-0 mt-1 bg-card-custom dark:bg-slate-800 border border-sky-300 dark:border-slate-700 rounded-lg shadow-xl p-2 z-20 min-w-[150px] normal-case font-normal text-xs space-y-1 max-h-48 overflow-y-auto">
-                                            <!-- Populado via JS -->
-                                        </div>
+                                        <div id="filter-menu-method" class="hidden absolute top-full left-0 mt-1 bg-sky-50 dark:bg-slate-800 border border-sky-300 dark:border-slate-700 rounded-lg shadow-xl p-2 z-20 min-w-[150px] normal-case font-normal text-xs space-y-1 max-h-48 overflow-y-auto"></div>
                                     </th>
 
                                     <th class="p-3 relative">
@@ -245,9 +268,7 @@
                                             <span>Usuário</span>
                                             <button onclick="toggleFilterMenu('user')" class="text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 p-1"><i class="fa-solid fa-chevron-down text-[10px]"></i></button>
                                         </div>
-                                        <div id="filter-menu-user" class="hidden absolute top-full left-0 mt-1 bg-card-custom dark:bg-slate-800 border border-sky-300 dark:border-slate-700 rounded-lg shadow-xl p-2 z-20 min-w-[140px] normal-case font-normal text-xs space-y-1 max-h-48 overflow-y-auto">
-                                            <!-- Populado via JS -->
-                                        </div>
+                                        <div id="filter-menu-user" class="hidden absolute top-full left-0 mt-1 bg-sky-50 dark:bg-slate-800 border border-sky-300 dark:border-slate-700 rounded-lg shadow-xl p-2 z-20 min-w-[140px] normal-case font-normal text-xs space-y-1 max-h-48 overflow-y-auto"></div>
                                     </th>
 
                                     <th class="p-3 text-right relative">
@@ -255,16 +276,13 @@
                                             <span>Valor</span>
                                             <button onclick="toggleFilterMenu('amount')" class="text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 p-1"><i class="fa-solid fa-chevron-down text-[10px]"></i></button>
                                         </div>
-                                        <div id="filter-menu-amount" class="hidden absolute top-full right-0 mt-1 bg-card-custom dark:bg-slate-800 border border-sky-300 dark:border-slate-700 rounded-lg shadow-xl p-2 z-20 min-w-[160px] normal-case font-normal text-xs space-y-1 max-h-48 overflow-y-auto">
-                                            <!-- Populado via JS -->
-                                        </div>
+                                        <div id="filter-menu-amount" class="hidden absolute top-full right-0 mt-1 bg-sky-50 dark:bg-slate-800 border border-sky-300 dark:border-slate-700 rounded-lg shadow-xl p-2 z-20 min-w-[160px] normal-case font-normal text-xs space-y-1 max-h-48 overflow-y-auto"></div>
                                     </th>
 
                                     <th class="p-3 text-center">Ações</th>
                                 </tr>
                             </thead>
-                            <tbody id="dre-table-body" class="divide-y divide-sky-200 dark:divide-slate-700/40">
-                                <!-- Preenchido por JS -->
+                            <tbody id="dre-table-body" class="divide-y divide-sky-300 dark:divide-slate-700/40">
                             </tbody>
                         </table>
                     </div>
@@ -274,7 +292,7 @@
                         <h4 class="text-md font-bold text-slate-900 dark:text-white mb-4">
                             Fechamento do Mês
                         </h4>
-                        <div class="bg-subcard-custom dark:bg-slate-900/50 p-5 rounded-xl border border-sky-300 dark:border-slate-700 space-y-3 w-full text-sm">
+                        <div class="bg-sky-100 dark:bg-slate-900/50 p-5 rounded-xl border border-sky-300 dark:border-slate-700 space-y-3 w-full text-sm">
                             <div class="flex justify-between items-center text-emerald-600 dark:text-emerald-400">
                                 <span>(+) Total de Ganhos / Entradas</span>
                                 <span class="font-bold" id="dre-calc-ganhos">R$ 0,00</span>
@@ -310,7 +328,7 @@
 
             <!-- TAB 2: DASHBOARD -->
             <section id="tab-dash" class="hidden space-y-6">
-                <div class="bg-card-custom dark:bg-slate-800/60 border border-sky-300 dark:border-slate-700/50 rounded-2xl p-6 shadow-sm">
+                <div class="bg-sky-50 dark:bg-slate-800/60 border border-sky-300 dark:border-slate-700/50 rounded-2xl p-6 shadow-sm">
                     <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
                         <i class="fa-solid fa-chart-column text-emerald-500"></i> Evolução da Linha do Tempo
                     </h3>
@@ -320,13 +338,13 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-card-custom dark:bg-slate-800/60 border border-sky-300 dark:border-slate-700/50 rounded-2xl p-6 shadow-sm">
+                    <div class="bg-sky-50 dark:bg-slate-800/60 border border-sky-300 dark:border-slate-700/50 rounded-2xl p-6 shadow-sm">
                         <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4">Distribuição de Gastos</h3>
                         <div class="h-64 flex justify-center">
                             <canvas id="chart-503020"></canvas>
                         </div>
                     </div>
-                    <div class="bg-card-custom dark:bg-slate-800/60 border border-sky-300 dark:border-slate-700/50 rounded-2xl p-6 shadow-sm">
+                    <div class="bg-sky-50 dark:bg-slate-800/60 border border-sky-300 dark:border-slate-700/50 rounded-2xl p-6 shadow-sm">
                         <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4">Maiores Despesas do Mês</h3>
                         <div class="h-64 flex justify-center">
                             <canvas id="chart-top-expenses"></canvas>
@@ -337,7 +355,7 @@
 
             <!-- TAB 3: INVESTIMENTOS (RENDA FIXA / CDB) -->
             <section id="tab-invest" class="hidden space-y-6">
-                <div class="bg-card-custom dark:bg-slate-800/60 border border-sky-300 dark:border-slate-700/50 rounded-2xl p-6 shadow-sm">
+                <div class="bg-sky-50 dark:bg-slate-800/60 border border-sky-300 dark:border-slate-700/50 rounded-2xl p-6 shadow-sm">
                     <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6">
                         <div>
                             <h3 class="text-lg font-bold text-slate-900 dark:text-white">Aplicações em Renda Fixa / CDB</h3>
@@ -345,25 +363,25 @@
                         </div>
                         
                         <div class="flex flex-wrap items-center gap-2">
-                            <button onclick="toggleInitialCdbFields()" class="bg-subcard-custom dark:bg-slate-900/60 hover:bg-sky-200 dark:hover:bg-slate-700/60 p-2.5 rounded-xl border border-sky-300 dark:border-slate-700 text-xs font-medium text-slate-700 dark:text-slate-300 flex items-center gap-2 transition shadow-sm">
+                            <button onclick="toggleInitialCdbFields()" class="bg-sky-100 dark:bg-slate-900/60 hover:bg-sky-200 dark:hover:bg-slate-700/60 p-2.5 rounded-xl border border-sky-300 dark:border-slate-700 text-xs font-medium text-slate-700 dark:text-slate-300 flex items-center gap-2 transition shadow-sm">
                                 <i class="fa-solid fa-sliders text-emerald-600 dark:text-emerald-400"></i>
                                 <span>Saldo Inicial</span>
                                 <i id="cdb-toggle-icon" class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
                             </button>
 
                             <div id="cdb-initial-fields" class="hidden flex flex-wrap items-center gap-2">
-                                <div class="bg-subcard-custom dark:bg-slate-900/60 p-2.5 rounded-xl border border-sky-300 dark:border-slate-700 flex items-center gap-2">
+                                <div class="bg-sky-100 dark:bg-slate-900/60 p-2.5 rounded-xl border border-sky-300 dark:border-slate-700 flex items-center gap-2">
                                     <label class="text-xs font-semibold text-slate-600 dark:text-slate-400">Saldo Inicial (R$):</label>
                                     <input type="number" step="0.01" id="cdb-initial-amount" value="0" onchange="renderInvestChart()" autocomplete="off" class="w-24 border border-sky-300 dark:border-slate-700 rounded px-2 py-1 text-xs text-slate-900 dark:text-white text-right font-bold focus:border-emerald-500" placeholder="0,00">
                                 </div>
 
-                                <div class="bg-subcard-custom dark:bg-slate-900/60 p-2.5 rounded-xl border border-sky-300 dark:border-slate-700 flex items-center gap-2">
+                                <div class="bg-sky-100 dark:bg-slate-900/60 p-2.5 rounded-xl border border-sky-300 dark:border-slate-700 flex items-center gap-2">
                                     <label class="text-xs font-semibold text-slate-600 dark:text-slate-400">Data Inicial:</label>
                                     <input type="month" id="cdb-initial-date" value="2026-01" onchange="renderInvestChart()" autocomplete="off" class="capitalize border border-sky-300 dark:border-slate-700 rounded px-2 py-1 text-xs text-slate-900 dark:text-white font-medium focus:border-emerald-500">
                                 </div>
                             </div>
 
-                            <div class="bg-subcard-custom dark:bg-slate-900/60 p-2.5 rounded-xl border border-sky-300 dark:border-slate-700 flex items-center gap-2">
+                            <div class="bg-sky-100 dark:bg-slate-900/60 p-2.5 rounded-xl border border-sky-300 dark:border-slate-700 flex items-center gap-2">
                                 <label class="text-xs font-semibold text-slate-600 dark:text-slate-400">Período:</label>
                                 <select id="invest-range" onchange="renderInvestChart()" class="border border-sky-300 dark:border-slate-700 text-xs rounded p-1 text-slate-900 dark:text-white font-medium">
                                     <option value="6M_PAST">Últimos 6 Meses</option>
@@ -373,7 +391,7 @@
                                 </select>
                             </div>
 
-                            <div class="bg-subcard-custom dark:bg-slate-900/60 p-2.5 rounded-xl border border-sky-300 dark:border-slate-700 flex items-center gap-2">
+                            <div class="bg-sky-100 dark:bg-slate-900/60 p-2.5 rounded-xl border border-sky-300 dark:border-slate-700 flex items-center gap-2">
                                 <label class="text-xs font-semibold text-slate-600 dark:text-slate-400">Taxa CDB (% a.a.):</label>
                                 <input type="number" step="0.01" id="cdb-rate" value="10.75" onchange="renderInvestChart()" autocomplete="off" class="w-16 border border-sky-300 dark:border-slate-700 rounded px-2 py-1 text-xs text-slate-900 dark:text-white text-right font-bold focus:border-emerald-500">
                             </div>
@@ -381,15 +399,15 @@
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                        <div class="bg-subcard-custom dark:bg-slate-900/50 p-4 rounded-xl border border-sky-300 dark:border-slate-700/50">
+                        <div class="bg-sky-100 dark:bg-slate-900/50 p-4 rounded-xl border border-sky-300 dark:border-slate-700/50">
                             <span class="text-xs text-slate-500 dark:text-slate-400">Saldo Atual Aplicado (CDB)</span>
                             <p class="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1" id="cdb-total-balance">R$ 0,00</p>
                         </div>
-                        <div class="bg-subcard-custom dark:bg-slate-900/50 p-4 rounded-xl border border-sky-300 dark:border-slate-700/50">
+                        <div class="bg-sky-100 dark:bg-slate-900/50 p-4 rounded-xl border border-sky-300 dark:border-slate-700/50">
                             <span class="text-xs text-slate-500 dark:text-slate-400">Estimativa Rendimento Mensal</span>
                             <p class="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-1" id="cdb-monthly-yield">R$ 0,00</p>
                         </div>
-                        <div class="bg-subcard-custom dark:bg-slate-900/50 p-4 rounded-xl border border-sky-300 dark:border-slate-700/50">
+                        <div class="bg-sky-100 dark:bg-slate-900/50 p-4 rounded-xl border border-sky-300 dark:border-slate-700/50">
                             <span class="text-xs text-slate-500 dark:text-slate-400" id="cdb-projected-label">Projeção Saldo em 12 Meses</span>
                             <p class="text-2xl font-bold text-purple-600 dark:text-purple-400 mt-1" id="cdb-projected-val">R$ 0,00</p>
                         </div>
@@ -406,7 +424,7 @@
 
     <!-- MODAL CUSTOMIZADO DE EXCLUSÃO DE PARCELAS (3 BOTÕES) -->
     <div id="delete-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-card-custom dark:bg-slate-800 border border-sky-300 dark:border-slate-700 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl text-center">
+        <div class="bg-sky-50 dark:bg-slate-800 border border-sky-300 dark:border-slate-700 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl text-center">
             <div class="w-12 h-12 bg-rose-500/10 text-rose-500 rounded-full flex items-center justify-center mx-auto text-xl">
                 <i class="fa-solid fa-trash-can"></i>
             </div>
@@ -433,13 +451,13 @@
 
     <!-- MODAL GERENCIADOR DE CARTÕES DE CRÉDITO -->
     <div id="card-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-card-custom dark:bg-slate-800 border border-sky-300 dark:border-slate-700 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+        <div class="bg-sky-50 dark:bg-slate-800 border border-sky-300 dark:border-slate-700 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
             <div class="flex justify-between items-center border-b border-sky-300 dark:border-slate-700 pb-3">
                 <h3 class="text-lg font-bold text-slate-900 dark:text-white">Meus Cartões de Crédito</h3>
                 <button onclick="closeCardManagerModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
 
-            <form onsubmit="handleSaveCard(event)" autocomplete="off" class="space-y-3 bg-subcard-custom dark:bg-slate-900/50 p-3 rounded-xl border border-sky-300 dark:border-slate-700">
+            <form onsubmit="handleSaveCard(event)" autocomplete="off" class="space-y-3 bg-sky-100 dark:bg-slate-900/50 p-3 rounded-xl border border-sky-300 dark:border-slate-700">
                 <p class="text-xs font-semibold text-slate-600 dark:text-slate-400">Cadastrar Novo Cartão</p>
                 <div>
                     <input type="text" id="card-nickname" placeholder="Apelido do Cartão (Ex: Nubank Roxo, Itaú Black)" required autocomplete="off" name="no-cardname" class="w-full border border-sky-300 dark:border-slate-700 rounded-lg p-2 text-slate-900 dark:text-white text-xs">
@@ -457,16 +475,14 @@
 
             <div>
                 <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Cartões Cadastrados</p>
-                <div id="cards-list" class="space-y-2 max-h-48 overflow-y-auto">
-                    <!-- Preenchido por JS -->
-                </div>
+                <div id="cards-list" class="space-y-2 max-h-48 overflow-y-auto"></div>
             </div>
         </div>
     </div>
 
     <!-- MODAL NOVO/EDITAR LANÇAMENTO -->
     <div id="entry-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-card-custom dark:bg-slate-800 border border-sky-300 dark:border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
+        <div class="bg-sky-50 dark:bg-slate-800 border border-sky-300 dark:border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
             <div class="flex justify-between items-center border-b border-sky-300 dark:border-slate-700 pb-3">
                 <h3 class="text-lg font-bold text-slate-900 dark:text-white" id="modal-title">Novo Lançamento</h3>
                 <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
@@ -487,9 +503,7 @@
                     </div>
                     <div>
                         <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Classificação</label>
-                        <select id="entry-category" class="w-full border border-sky-300 dark:border-slate-700 rounded-lg p-2.5 text-slate-900 dark:text-white text-sm">
-                            <!-- Preenchido por JS -->
-                        </select>
+                        <select id="entry-category" class="w-full border border-sky-300 dark:border-slate-700 rounded-lg p-2.5 text-slate-900 dark:text-white text-sm"></select>
                     </div>
                 </div>
 
@@ -512,15 +526,11 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Método de Pagamento</label>
-                        <select id="entry-method" onchange="toggleCreditOptions()" class="w-full border border-sky-300 dark:border-slate-700 rounded-lg p-2.5 text-slate-900 dark:text-white text-sm">
-                            <!-- Preenchido por JS -->
-                        </select>
+                        <select id="entry-method" onchange="toggleCreditOptions()" class="w-full border border-sky-300 dark:border-slate-700 rounded-lg p-2.5 text-slate-900 dark:text-white text-sm"></select>
                     </div>
                     <div id="credit-card-select-container" class="hidden">
                         <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Selecione o Cartão</label>
-                        <select id="entry-card-id" class="w-full border border-sky-300 dark:border-slate-700 rounded-lg p-2.5 text-slate-900 dark:text-white text-sm">
-                            <!-- Populado dinamicamente -->
-                        </select>
+                        <select id="entry-card-id" class="w-full border border-sky-300 dark:border-slate-700 rounded-lg p-2.5 text-slate-900 dark:text-white text-sm"></select>
                     </div>
                 </div>
 
@@ -529,7 +539,7 @@
                     <input type="number" id="entry-installments" min="1" max="48" value="1" autocomplete="off" name="no-installments" class="w-full border border-sky-300 dark:border-slate-700 rounded-lg p-2.5 text-slate-900 dark:text-white text-sm">
                 </div>
 
-                <div class="bg-subcard-custom dark:bg-slate-900/40 p-3 rounded-lg border border-sky-300 dark:border-slate-700/40 text-xs text-slate-500 dark:text-slate-400">
+                <div class="bg-sky-100 dark:bg-slate-900/40 p-3 rounded-lg border border-sky-300 dark:border-slate-700/40 text-xs text-slate-500 dark:text-slate-400">
                     <i class="fa-solid fa-circle-info text-blue-500"></i> Registro atribuído a: <strong id="entry-author-display" class="text-slate-800 dark:text-white">MATHEUS</strong>
                 </div>
 
@@ -542,7 +552,6 @@
 
     <!-- JAVASCRIPT -->
     <script>
-        // CONFIGURAÇÃO DO FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyC_YBBpO6mlW7OWnXiG13lARLxJvgJtuaY",
             authDomain: "controle-financeiro-eb619.firebaseapp.com",
@@ -756,7 +765,7 @@
 
             userCards.forEach(c => {
                 container.innerHTML += `
-                    <div class="flex items-center justify-between bg-subcard-custom dark:bg-slate-900 p-2.5 rounded-lg text-xs">
+                    <div class="flex items-center justify-between bg-sky-100 dark:bg-slate-900 p-2.5 rounded-lg text-xs">
                         <div>
                             <p class="font-bold text-slate-800 dark:text-white">${c.nickname}</p>
                             <p class="text-[10px] text-slate-500">Fecha dia: ${c.closingDay}</p>
