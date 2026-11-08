@@ -98,9 +98,9 @@
                         <i class="fa-solid fa-credit-card w-5"></i> Meus Cartões
                     </button>
 
-                    <!-- BOTÃO EXPORTAR EXCEL NA SIDEBAR (NOVO ITEM 1) -->
-                    <button onclick="exportToExcel()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 text-left transition">
-                        <i class="fa-solid fa-file-excel w-5 text-emerald-600 dark:text-emerald-400"></i> Exportar Mês (.xlsx)
+                    <!-- BOTÃO EXPORTAR EXCEL EM TOM DE AZUL (CORREÇÃO ITEM 2) -->
+                    <button onclick="exportToExcel()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sky-700 dark:text-sky-400 hover:bg-sky-300/40 dark:hover:bg-sky-900/40 text-left transition">
+                        <i class="fa-solid fa-file-excel w-5 text-sky-600 dark:text-sky-400"></i> Exportar Mês (.xlsx)
                     </button>
                 </nav>
             </div>
@@ -226,12 +226,13 @@
                                         </div>
                                     </th>
 
+                                    <!-- FILTRO VALOR (COM BUSCA TEXTUAL/NUMÉRICA - CORREÇÃO ITEM 1) -->
                                     <th class="p-3 text-right relative">
                                         <div class="flex items-center justify-end gap-1">
                                             <span>Valor</span>
                                             <button onclick="toggleFilterMenu('amount')" class="text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 p-1"><i class="fa-solid fa-chevron-down text-[10px]"></i></button>
                                         </div>
-                                        <div id="filter-menu-amount" class="hidden absolute top-full right-0 mt-1 bg-white dark:bg-slate-800 border border-sky-200 dark:border-slate-700 rounded-lg shadow-xl p-2 z-20 min-w-[160px] normal-case font-normal text-xs space-y-1 max-h-60 overflow-y-auto">
+                                        <div id="filter-menu-amount" class="hidden absolute top-full right-0 mt-1 bg-white dark:bg-slate-800 border border-sky-200 dark:border-slate-700 rounded-lg shadow-xl p-2 z-20 min-w-[180px] normal-case font-normal text-xs space-y-1 max-h-60 overflow-y-auto">
                                             <!-- Populado via JS -->
                                         </div>
                                     </th>
@@ -383,7 +384,7 @@
         </main>
     </div>
 
-    <!-- MODAL CUSTOMIZADO DE CONFIRMAÇÃO E NOTIFICAÇÃO DE REPLICAÇÃO (NOVOS ITENS 3 e 4) -->
+    <!-- MODAL CUSTOMIZADO DE CONFIRMAÇÃO E NOTIFICAÇÃO DE REPLICAÇÃO -->
     <div id="replicate-info-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-slate-800 border border-sky-200 dark:border-slate-700 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl text-center">
             <div id="replicate-modal-icon" class="w-12 h-12 bg-emerald-500/10 text-emerald-500 rounded-full flex items-center justify-center mx-auto text-xl">
@@ -620,10 +621,11 @@
             amount: []
         };
 
-        // PESQUISA TEXTUAL NOS MENUS DE FILTRO
+        // PESQUISA TEXTUAL NOS MENUS DE FILTRO (INCLUINDO A COLUNA VALOR - CORREÇÃO ITEM 1)
         let columnSearchTerms = {
             date: '',
-            desc: ''
+            desc: '',
+            amount: ''
         };
 
         function initFirebaseListeners() {
@@ -729,7 +731,7 @@
             handleCheckboxFilterChange(columnKey);
         }
 
-        // PESQUISAR OPÇÕES NO MENU DE FILTRO - FOCO MANANTIDO (CORREÇÃO ITEM 2)
+        // PESQUISAR OPÇÕES NO MENU DE FILTRO - FOCO MANTIDO
         function handleFilterSearchInput(columnKey, inputEl) {
             const val = inputEl.value;
             columnSearchTerms[columnKey] = val.toLowerCase().trim();
@@ -754,7 +756,7 @@
 
         function clearTableFilters() {
             columnFilters = { date: [], desc: [], category: [], method: [], user: [], amount: [] };
-            columnSearchTerms = { date: '', desc: '' };
+            columnSearchTerms = { date: '', desc: '', amount: '' };
             const keys = ['date', 'desc', 'category', 'method', 'user', 'amount'];
             keys.forEach(k => {
                 const container = document.getElementById(`filter-menu-${k}`);
@@ -1056,7 +1058,7 @@
             document.getElementById('insufficient-funds-modal').classList.add('hidden');
         }
 
-        // MODAL INFORMATIVO DE REPLICAÇÃO (NOVO ITEM 3 e 4)
+        // MODAL INFORMATIVO DE REPLICAÇÃO
         function openReplicateInfoModal(title, message, isError = false) {
             const iconContainer = document.getElementById('replicate-modal-icon');
             const titleEl = document.getElementById('replicate-modal-title');
@@ -1185,12 +1187,12 @@
             closeModal();
         }
 
-        // REPLICAR LANÇAMENTO PARA O MÊS SUBSEQUENTE (ATUALIZADO ITENS 3 e 4)
+        // REPLICAR LANÇAMENTO PARA O MÊS SUBSEQUENTE
         async function replicateEntryToNextMonth(id) {
             const item = transactions.find(t => String(t.id) === String(id));
             if (!item) return;
 
-            // ITEM 4: IMPEDIR REPLICAÇÃO DE COMPRAS PARCELADAS NO CARTÃO
+            // IMPEDIR REPLICAÇÃO DE COMPRAS PARCELADAS NO CARTÃO
             if (item.groupId || (item.method === 'CREDITO' && /\(\d+\/\d+\)/.test(item.desc))) {
                 openReplicateInfoModal(
                     "Replicação Não Permitida", 
@@ -1220,7 +1222,7 @@
 
             let cleanDesc = item.desc.replace(/\s*\(\d+\/\d+\)/g, '');
 
-            // ITEM 3: IMPEDIR DUPLA REPLICAÇÃO PARA O MESMO MÊS
+            // IMPEDIR DUPLA REPLICAÇÃO PARA O MESMO MÊS
             const alreadyExists = transactions.some(t => 
                 t.monthRef === newMonthRef &&
                 t.user === item.user &&
@@ -1278,7 +1280,7 @@
                 updateViews();
             }
 
-            // JANELA DE SUCESSO (ITEM 3)
+            // JANELA DE SUCESSO
             openReplicateInfoModal(
                 "Lançamento Replicado!", 
                 `O lançamento "${cleanDesc}" foi duplicado com sucesso para a data ${formatDateBR(newDateStr)}.`, 
@@ -1360,7 +1362,7 @@
             return balance;
         }
 
-        // POPULAR DROPDOWNS COM CHECKBOXES, OPÇÃO MARCAR TODOS E BUSCA TEXTUAL
+        // POPULAR DROPDOWNS COM CHECKBOXES, OPÇÃO MARCAR TODOS E BUSCA TEXTUAL (INCLUINDO COLUNA VALOR)
         function populateFilterDropdowns(baseMonthFiltered) {
             const keys = ['date', 'desc', 'category', 'method', 'user', 'amount'];
             
@@ -1380,15 +1382,15 @@
 
                 let sortedVals = Array.from(uniqueValues).sort();
 
-                // Filtragem pela caixa de busca (se houver para essa coluna)
+                // Filtragem pela caixa de busca (suportada agora em Data, Descrição e Valor - CORREÇÃO ITEM 1)
                 if (columnSearchTerms[k]) {
                     sortedVals = sortedVals.filter(v => v.toLowerCase().includes(columnSearchTerms[k]));
                 }
 
                 container.innerHTML = '';
 
-                // 1. Campo de Busca Textual (Data e Descrição - FOCO PRESERVADO VIA ID)
-                if (k === 'date' || k === 'desc') {
+                // 1. Campo de Busca Textual (Data, Descrição e Valor)
+                if (k === 'date' || k === 'desc' || k === 'amount') {
                     container.innerHTML += `
                         <div class="mb-2 pb-1 border-b border-sky-200 dark:border-slate-700">
                             <input type="text" id="search-input-${k}" placeholder="Buscar..." value="${columnSearchTerms[k] || ''}" oninput="handleFilterSearchInput('${k}', this)" class="w-full bg-sky-50 dark:bg-slate-900 border border-sky-200 dark:border-slate-700 rounded px-2 py-1 text-xs outline-none focus:border-emerald-500 text-slate-900 dark:text-white">
@@ -1423,7 +1425,7 @@
             });
         }
 
-        // EXPORTAR PARA EXCEL (.XLSX) COM ESTÉTICA MELHORADA (ITEM 1)
+        // EXPORTAR PARA EXCEL (.XLSX)
         function exportToExcel() {
             const selectedMonth = document.getElementById('selected-month').value;
             const selectedUser = document.getElementById('filter-user').value;
@@ -1463,7 +1465,7 @@
 
             const worksheet = XLSX.utils.json_to_sheet(excelData);
 
-            // Ajustar largura automática de colunas para melhor estética
+            // Ajustar largura automática de colunas
             const colWidths = [
                 { wch: 12 }, // Data
                 { wch: 35 }, // Descrição
@@ -1776,7 +1778,7 @@
             });
         }
 
-        // GRÁFICO DE INVESTIMENTOS CDB
+        // GRÁFICOS DE INVESTIMENTOS CDB
         function renderInvestChart() {
             const selectedUser = document.getElementById('filter-user').value;
             const rangeType = document.getElementById('invest-range').value;
