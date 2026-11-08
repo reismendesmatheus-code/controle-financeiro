@@ -109,7 +109,8 @@
             <!-- CONTROLES SUPERIORES -->
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
                 <div>
-                    <h1 class="text-2xl font-bold text-slate-900 dark:text-white" id="page-title">DRE Financeiro</h1>
+                    <!-- TÍTULO ALTERADO -->
+                    <h1 class="text-2xl font-bold text-slate-900 dark:text-white" id="page-title">Meu Financeiro</h1>
                     <p class="text-sm font-semibold text-emerald-600 dark:text-emerald-400 mt-0.5 capitalize" id="formatted-selected-month">Janeiro de 2026</p>
                 </div>
                 
@@ -165,7 +166,6 @@
                     
                     <div class="overflow-x-auto mb-8 rounded-lg">
                         <table class="w-full text-left text-sm text-slate-700 dark:text-slate-300">
-                            <!-- CABEÇALHO COM AZUL MAIS SUAVE (bg-sky-100/60) -->
                             <thead class="bg-sky-100/60 dark:bg-slate-900/70 text-slate-700 dark:text-slate-400 uppercase text-xs">
                                 <tr>
                                     <!-- FILTROS MULTI-SELEÇÃO COM CHECKBOXES -->
@@ -403,6 +403,51 @@
         </div>
     </div>
 
+    <!-- MODAL CUSTOMIZADO DE CONFIRMAÇÃO DE EXCLUSÃO SIMPLES (NOVO ITEM 4) -->
+    <div id="simple-delete-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 border border-sky-200 dark:border-slate-700 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl text-center">
+            <div class="w-12 h-12 bg-rose-500/10 text-rose-500 rounded-full flex items-center justify-center mx-auto text-xl">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white">Confirmar Exclusão</h3>
+                <p class="text-xs text-slate-600 dark:text-slate-400 mt-2">
+                    Tem certeza de que deseja excluir este lançamento? Esta ação não pode ser desfeita.
+                </p>
+            </div>
+            
+            <div class="flex gap-3 pt-2">
+                <button onclick="closeSimpleDeleteModal()" class="flex-1 bg-sky-200 dark:bg-slate-700 hover:bg-sky-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-200 font-semibold py-2.5 px-4 rounded-xl text-xs transition">
+                    Cancelar
+                </button>
+                <button onclick="confirmSimpleDelete()" class="flex-1 bg-rose-600 hover:bg-rose-500 text-white font-semibold py-2.5 px-4 rounded-xl text-xs transition shadow-md shadow-rose-600/20">
+                    Confirmar Exclusão
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL INFORMATIVO DE SALDO INSUFICIENTE EM RESGATE CDB (NOVO ITEM 3) -->
+    <div id="insufficient-funds-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 border border-sky-200 dark:border-slate-700 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl text-center">
+            <div class="w-12 h-12 bg-amber-500/10 text-amber-500 rounded-full flex items-center justify-center mx-auto text-xl">
+                <i class="fa-solid fa-piggy-bank"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white">Saldo de Investimento Insuficiente</h3>
+                <p class="text-xs text-slate-600 dark:text-slate-400 mt-2" id="insufficient-funds-msg">
+                    Você não possui esse saldo investido para resgate.
+                </p>
+            </div>
+            
+            <div class="pt-2">
+                <button onclick="closeInsufficientFundsModal()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2.5 px-4 rounded-xl text-xs transition shadow-md shadow-emerald-600/20">
+                    Entendido
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL GERENCIADOR DE CARTÕES DE CRÉDITO -->
     <div id="card-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-slate-800 border border-sky-200 dark:border-slate-700 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
@@ -535,6 +580,7 @@
         let creditCards = [];
         let transactions = [];
         let itemToDeletePending = null;
+        let singleDeleteIdPending = null;
         
         // FILTROS DE COLUNA (ARRAYS PARA SUPORTAR MÚLTIPLAS SELEÇÕES)
         let columnFilters = {
@@ -913,6 +959,37 @@
             return `${yyyy}-${mm}`;
         }
 
+        // CÁLCULO DE SALDO ACUMULADO CDB PARA VALIDAÇÃO DE RESGATE (NOVO ITEM 3)
+        function getCdbBalanceAvailable(user, targetMonthRef, excludeEditId = null) {
+            const initialAmount = parseFloat(document.getElementById('cdb-initial-amount').value) || 0;
+            const initialDateStr = document.getElementById('cdb-initial-date').value;
+
+            let balance = 0;
+            if (initialAmount > 0 && initialDateStr && initialDateStr <= targetMonthRef) {
+                balance += initialAmount;
+            }
+
+            transactions.forEach(t => {
+                if (excludeEditId && String(t.id) === String(excludeEditId)) return;
+                if (user !== 'ALL' && t.user !== user) return;
+                if (t.monthRef <= targetMonthRef) {
+                    if (t.type === 'INVESTIMENTO') balance += t.amount;
+                    if (t.type === 'RESGATE') balance -= t.amount;
+                }
+            });
+
+            return Math.max(0, balance);
+        }
+
+        function openInsufficientFundsModal(availableBalance) {
+            document.getElementById('insufficient-funds-msg').innerText = `Você tentou resgatar um valor maior do que o saldo total aplicado em CDB. O valor disponível para resgate nesta data é de ${formatCurrency(availableBalance)}.`;
+            document.getElementById('insufficient-funds-modal').classList.remove('hidden');
+        }
+
+        function closeInsufficientFundsModal() {
+            document.getElementById('insufficient-funds-modal').classList.add('hidden');
+        }
+
         // SALVAR LANÇAMENTO
         async function handleSaveEntry(e) {
             e.preventDefault();
@@ -926,11 +1003,21 @@
             const cardId = method === 'CREDITO' ? document.getElementById('entry-card-id').value || null : null;
             const installments = parseInt(document.getElementById('entry-installments').value) || 1;
 
+            const targetMonthRef = calculateMonthRef(dateStr, method, currentUser, cardId);
+
+            // VALIDAÇÃO DE RESGATE CDB (NOVO ITEM 3)
+            if (type === 'RESGATE') {
+                const available = getCdbBalanceAvailable(currentUser, targetMonthRef, editId);
+                if (rawAmount > available) {
+                    openInsufficientFundsModal(available);
+                    return;
+                }
+            }
+
             if (db) {
                 if (editId) {
-                    const monthRef = calculateMonthRef(dateStr, method, currentUser, cardId);
                     await db.collection('transactions').doc(editId).update({
-                        type, category, desc, amount: rawAmount, date: dateStr, method, cardId, monthRef
+                        type, category, desc, amount: rawAmount, date: dateStr, method, cardId, monthRef: targetMonthRef
                     });
                 } else {
                     if (method === 'CREDITO' && installments > 1 && type === 'SAIDA') {
@@ -962,7 +1049,6 @@
                         }
                         await batch.commit();
                     } else {
-                        const monthRef = calculateMonthRef(dateStr, method, currentUser, cardId);
                         await db.collection('transactions').add({
                             user: currentUser,
                             type: type,
@@ -972,13 +1058,12 @@
                             date: dateStr,
                             method: method,
                             cardId: cardId,
-                            monthRef: monthRef,
+                            monthRef: targetMonthRef,
                             createdAt: firebase.firestore.FieldValue.serverTimestamp()
                         });
                     }
                 }
             } else {
-                const monthRef = calculateMonthRef(dateStr, method, currentUser, cardId);
                 const groupId = (method === 'CREDITO' && installments > 1) ? ('group_' + Date.now()) : null;
                 
                 if (method === 'CREDITO' && installments > 1 && type === 'SAIDA') {
@@ -1002,7 +1087,7 @@
                         });
                     }
                 } else {
-                    transactions.push({ id: String(Date.now()), user: currentUser, type, category, desc, amount: rawAmount, date: dateStr, method, cardId, monthRef });
+                    transactions.push({ id: String(Date.now()), user: currentUser, type, category, desc, amount: rawAmount, date: dateStr, method, cardId, monthRef: targetMonthRef });
                 }
                 updateViews();
             }
@@ -1010,7 +1095,7 @@
             closeModal();
         }
 
-        // LÓGICA DE EXCLUSÃO DE LANÇAMENTOS E MODAL CUSTOMIZADO (3 BOTÕES)
+        // LÓGICA DE EXCLUSÃO DE LANÇAMENTOS E MODAIS (ITEM 4 ATUALIZADO)
         function deleteEntry(id) {
             const item = transactions.find(t => String(t.id) === String(id));
             if (!item) return;
@@ -1019,15 +1104,26 @@
                 itemToDeletePending = item;
                 document.getElementById('delete-modal').classList.remove('hidden');
             } else {
-                if (confirm("Tem certeza que deseja excluir este lançamento?")) {
-                    executeSingleDelete(item.id);
-                }
+                // MODAL CUSTOMIZADO PARA EXCLUSÃO SIMPLES (ITEM 4)
+                singleDeleteIdPending = item.id;
+                document.getElementById('simple-delete-modal').classList.remove('hidden');
             }
         }
 
         function closeDeleteModal() {
             itemToDeletePending = null;
             document.getElementById('delete-modal').classList.add('hidden');
+        }
+
+        function closeSimpleDeleteModal() {
+            singleDeleteIdPending = null;
+            document.getElementById('simple-delete-modal').classList.add('hidden');
+        }
+
+        async function confirmSimpleDelete() {
+            if (!singleDeleteIdPending) return;
+            await executeSingleDelete(singleDeleteIdPending);
+            closeSimpleDeleteModal();
         }
 
         async function confirmDeleteOption(mode) {
@@ -1226,8 +1322,11 @@
 
             monthsList.forEach(mStr => {
                 const mTx = transactions.filter(t => t.monthRef === mStr && (selectedUser === 'ALL' || t.user === selectedUser));
-                const g = mTx.filter(t => t.type === 'ENTRADA' || t.type === 'RESGATE').reduce((acc, t) => acc + t.amount, 0);
+                
+                // ALTERAÇÃO DO ITEM 2: APORTES E RESGATES CDB REMOVIDOS DA LINHA DO TEMPO
+                const g = mTx.filter(t => t.type === 'ENTRADA').reduce((acc, t) => acc + t.amount, 0);
                 const d = mTx.filter(t => t.type === 'SAIDA').reduce((acc, t) => acc + t.amount, 0);
+                
                 timelineGanhos.push(g);
                 timelineDespesas.push(d);
             });
