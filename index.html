@@ -97,6 +97,11 @@
                     <button onclick="openCardManagerModal()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-slate-600 dark:text-slate-400 hover:bg-sky-300/40 dark:hover:bg-slate-700/30 text-left transition mt-4">
                         <i class="fa-solid fa-credit-card w-5"></i> Meus Cartões
                     </button>
+
+                    <!-- BOTÃO EXPORTAR EXCEL NA SIDEBAR (NOVO ITEM 1) -->
+                    <button onclick="exportToExcel()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 text-left transition">
+                        <i class="fa-solid fa-file-excel w-5 text-emerald-600 dark:text-emerald-400"></i> Exportar Mês (.xlsx)
+                    </button>
                 </nav>
             </div>
 
@@ -125,12 +130,6 @@
                         <option value="MATHEUS">MATHEUS</option>
                         <option value="RHAUANE">RHAUANE</option>
                     </select>
-
-                    <!-- Botão Exportar Excel (NOVO ITEM 4) -->
-                    <button onclick="exportToExcel()" title="Exportar para Excel" class="bg-emerald-700 hover:bg-emerald-600 text-white text-sm font-semibold px-3 py-2.5 rounded-lg flex items-center gap-2 transition shadow-md">
-                        <i class="fa-solid fa-file-excel text-base"></i>
-                        <span class="hidden md:inline">Exportar</span>
-                    </button>
 
                     <!-- Botão Novo Lançamento -->
                     <button onclick="openModal()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold px-4 py-2.5 rounded-lg flex items-center gap-2 transition shadow-lg shadow-emerald-600/20">
@@ -175,7 +174,7 @@
                         <table class="w-full text-left text-sm text-slate-700 dark:text-slate-300">
                             <thead class="bg-sky-100/60 dark:bg-slate-900/70 text-slate-700 dark:text-slate-400 uppercase text-xs">
                                 <tr>
-                                    <!-- FILTRO DATA (COM BUSCA TEXTUAL E MARCAR TODOS) -->
+                                    <!-- FILTRO DATA -->
                                     <th class="p-3 relative">
                                         <div class="flex items-center justify-between gap-1">
                                             <span>Data</span>
@@ -186,7 +185,7 @@
                                         </div>
                                     </th>
 
-                                    <!-- FILTRO DESCRIÇÃO (COM BUSCA TEXTUAL E MARCAR TODOS) -->
+                                    <!-- FILTRO DESCRIÇÃO -->
                                     <th class="p-3 relative">
                                         <div class="flex items-center justify-between gap-1">
                                             <span>Descrição</span>
@@ -382,6 +381,27 @@
             </section>
 
         </main>
+    </div>
+
+    <!-- MODAL CUSTOMIZADO DE CONFIRMAÇÃO E NOTIFICAÇÃO DE REPLICAÇÃO (NOVOS ITENS 3 e 4) -->
+    <div id="replicate-info-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 border border-sky-200 dark:border-slate-700 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl text-center">
+            <div id="replicate-modal-icon" class="w-12 h-12 bg-emerald-500/10 text-emerald-500 rounded-full flex items-center justify-center mx-auto text-xl">
+                <i class="fa-solid fa-clone"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white" id="replicate-modal-title">Replicação de Lançamento</h3>
+                <p class="text-xs text-slate-600 dark:text-slate-400 mt-2" id="replicate-modal-msg">
+                    Lançamento duplicado com sucesso para o próximo mês.
+                </p>
+            </div>
+            
+            <div class="pt-2">
+                <button onclick="closeReplicateInfoModal()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2.5 px-4 rounded-xl text-xs transition shadow-md shadow-emerald-600/20">
+                    Entendido
+                </button>
+            </div>
+        </div>
     </div>
 
     <!-- MODAL CUSTOMIZADO DE EXCLUSÃO DE PARCELAS (3 BOTÕES) -->
@@ -600,7 +620,7 @@
             amount: []
         };
 
-        // PESQUISA TEXTUAL NOS MENUS DE FILTRO (NOVO ITEM 3)
+        // PESQUISA TEXTUAL NOS MENUS DE FILTRO
         let columnSearchTerms = {
             date: '',
             desc: ''
@@ -701,7 +721,7 @@
             updateViews();
         }
 
-        // MARCAR/DESMARCAR TODOS EM UM FILTRO (NOVO ITEM 2)
+        // MARCAR/DESMARCAR TODOS EM UM FILTRO
         function toggleSelectAllFilter(columnKey, isChecked) {
             const container = document.getElementById(`filter-menu-${columnKey}`);
             const visibleCheckboxes = container.querySelectorAll('.filter-item-cb');
@@ -709,9 +729,10 @@
             handleCheckboxFilterChange(columnKey);
         }
 
-        // PESQUISAR OPÇÕES NO MENU DE FILTRO (NOVO ITEM 3)
-        function handleFilterSearchInput(columnKey, value) {
-            columnSearchTerms[columnKey] = value.toLowerCase().trim();
+        // PESQUISAR OPÇÕES NO MENU DE FILTRO - FOCO MANANTIDO (CORREÇÃO ITEM 2)
+        function handleFilterSearchInput(columnKey, inputEl) {
+            const val = inputEl.value;
+            columnSearchTerms[columnKey] = val.toLowerCase().trim();
             const selectedMonth = document.getElementById('selected-month').value;
             const selectedUser = document.getElementById('filter-user').value;
 
@@ -722,6 +743,13 @@
             });
 
             populateFilterDropdowns(baseMonthFiltered);
+
+            // Re-focar no elemento de input e restaurar o cursor no final do texto
+            const newSearchInput = document.getElementById(`search-input-${columnKey}`);
+            if (newSearchInput) {
+                newSearchInput.focus();
+                newSearchInput.setSelectionRange(val.length, val.length);
+            }
         }
 
         function clearTableFilters() {
@@ -1028,6 +1056,30 @@
             document.getElementById('insufficient-funds-modal').classList.add('hidden');
         }
 
+        // MODAL INFORMATIVO DE REPLICAÇÃO (NOVO ITEM 3 e 4)
+        function openReplicateInfoModal(title, message, isError = false) {
+            const iconContainer = document.getElementById('replicate-modal-icon');
+            const titleEl = document.getElementById('replicate-modal-title');
+            const msgEl = document.getElementById('replicate-modal-msg');
+
+            titleEl.innerText = title;
+            msgEl.innerText = message;
+
+            if (isError) {
+                iconContainer.className = 'w-12 h-12 bg-amber-500/10 text-amber-500 rounded-full flex items-center justify-center mx-auto text-xl';
+                iconContainer.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+            } else {
+                iconContainer.className = 'w-12 h-12 bg-emerald-500/10 text-emerald-500 rounded-full flex items-center justify-center mx-auto text-xl';
+                iconContainer.innerHTML = '<i class="fa-solid fa-check"></i>';
+            }
+
+            document.getElementById('replicate-info-modal').classList.remove('hidden');
+        }
+
+        function closeReplicateInfoModal() {
+            document.getElementById('replicate-info-modal').classList.add('hidden');
+        }
+
         // SALVAR LANÇAMENTO
         async function handleSaveEntry(e) {
             e.preventDefault();
@@ -1133,10 +1185,20 @@
             closeModal();
         }
 
-        // REPLICAR LANÇAMENTO PARA O MÊS SUBSEQUENTE (NOVO ITEM 1)
+        // REPLICAR LANÇAMENTO PARA O MÊS SUBSEQUENTE (ATUALIZADO ITENS 3 e 4)
         async function replicateEntryToNextMonth(id) {
             const item = transactions.find(t => String(t.id) === String(id));
             if (!item) return;
+
+            // ITEM 4: IMPEDIR REPLICAÇÃO DE COMPRAS PARCELADAS NO CARTÃO
+            if (item.groupId || (item.method === 'CREDITO' && /\(\d+\/\d+\)/.test(item.desc))) {
+                openReplicateInfoModal(
+                    "Replicação Não Permitida", 
+                    "Não é possível replicar lançamentos de cartão de crédito realizados de forma parcelada.", 
+                    true
+                );
+                return;
+            }
 
             // Calcular a mesma data no mês seguinte
             const dateParts = item.date.split('-');
@@ -1144,12 +1206,9 @@
             const origMonth = parseInt(dateParts[1]); // 1-12
             const origDay = parseInt(dateParts[2]);
 
-            // Mês seguinte em JS (Month index 0-11)
             let targetDateObj = new Date(origYear, origMonth, origDay);
-            
-            // Garantir ajustamento caso o dia ultrapasse os dias do mês (ex: 31 de janeiro -> final de fevereiro)
             if (targetDateObj.getDate() !== origDay) {
-                targetDateObj.setDate(0); // Último dia do mês correto
+                targetDateObj.setDate(0);
             }
 
             const yyyy = targetDateObj.getFullYear();
@@ -1159,7 +1218,29 @@
 
             const newMonthRef = calculateMonthRef(newDateStr, item.method, item.user, item.cardId || null);
 
-            // Se a replicação for um resgate de CDB, validar saldo disponível no mês futuro
+            let cleanDesc = item.desc.replace(/\s*\(\d+\/\d+\)/g, '');
+
+            // ITEM 3: IMPEDIR DUPLA REPLICAÇÃO PARA O MESMO MÊS
+            const alreadyExists = transactions.some(t => 
+                t.monthRef === newMonthRef &&
+                t.user === item.user &&
+                t.desc === cleanDesc &&
+                t.amount === item.amount &&
+                t.type === item.type &&
+                t.category === item.category &&
+                t.method === item.method
+            );
+
+            if (alreadyExists) {
+                openReplicateInfoModal(
+                    "Lançamento Já Replicado", 
+                    `Este lançamento já foi replicado anteriormente para o mês correspondente.`, 
+                    true
+                );
+                return;
+            }
+
+            // Se a replicação for um resgate de CDB, validar saldo disponível
             if (item.type === 'RESGATE') {
                 const available = getCdbBalanceAvailable(item.user, newMonthRef);
                 if (item.amount > available) {
@@ -1167,9 +1248,6 @@
                     return;
                 }
             }
-
-            // Remover indicação de parcelamento se houver na descrição (ex: "(1/12)")
-            let cleanDesc = item.desc.replace(/\s*\(\d+\/\d+\)/g, '');
 
             if (db) {
                 await db.collection('transactions').add({
@@ -1199,6 +1277,13 @@
                 });
                 updateViews();
             }
+
+            // JANELA DE SUCESSO (ITEM 3)
+            openReplicateInfoModal(
+                "Lançamento Replicado!", 
+                `O lançamento "${cleanDesc}" foi duplicado com sucesso para a data ${formatDateBR(newDateStr)}.`, 
+                false
+            );
         }
 
         // LÓGICA DE EXCLUSÃO DE LANÇAMENTOS E MODAIS
@@ -1275,7 +1360,7 @@
             return balance;
         }
 
-        // POPULAR DROPDOWNS COM CHECKBOXES, OPÇÃO MARCAR TODOS E BUSCA TEXTUAL (ITENS 2 e 3)
+        // POPULAR DROPDOWNS COM CHECKBOXES, OPÇÃO MARCAR TODOS E BUSCA TEXTUAL
         function populateFilterDropdowns(baseMonthFiltered) {
             const keys = ['date', 'desc', 'category', 'method', 'user', 'amount'];
             
@@ -1302,11 +1387,11 @@
 
                 container.innerHTML = '';
 
-                // 1. Campo de Busca Textual (Apenas para Data e Descrição - ITEM 3)
+                // 1. Campo de Busca Textual (Data e Descrição - FOCO PRESERVADO VIA ID)
                 if (k === 'date' || k === 'desc') {
                     container.innerHTML += `
                         <div class="mb-2 pb-1 border-b border-sky-200 dark:border-slate-700">
-                            <input type="text" placeholder="Buscar..." value="${columnSearchTerms[k] || ''}" oninput="handleFilterSearchInput('${k}', this.value)" class="w-full bg-sky-50 dark:bg-slate-900 border border-sky-200 dark:border-slate-700 rounded px-2 py-1 text-xs outline-none focus:border-emerald-500 text-slate-900 dark:text-white">
+                            <input type="text" id="search-input-${k}" placeholder="Buscar..." value="${columnSearchTerms[k] || ''}" oninput="handleFilterSearchInput('${k}', this)" class="w-full bg-sky-50 dark:bg-slate-900 border border-sky-200 dark:border-slate-700 rounded px-2 py-1 text-xs outline-none focus:border-emerald-500 text-slate-900 dark:text-white">
                         </div>
                     `;
                 }
@@ -1316,7 +1401,7 @@
                     return;
                 }
 
-                // 2. Opção "Marcar Todos" (NOVO ITEM 2)
+                // 2. Opção "Marcar Todos"
                 const allSelected = sortedVals.length > 0 && sortedVals.every(v => columnFilters[k].includes(v));
                 container.innerHTML += `
                     <label class="flex items-center gap-2 px-1 py-1 hover:bg-sky-100 dark:hover:bg-slate-700/60 rounded cursor-pointer font-bold border-b border-sky-100 dark:border-slate-700/50 text-slate-900 dark:text-white mb-1">
@@ -1338,7 +1423,7 @@
             });
         }
 
-        // EXPORTAR PARA EXCEL (.XLSX - NOVO ITEM 4)
+        // EXPORTAR PARA EXCEL (.XLSX) COM ESTÉTICA MELHORADA (ITEM 1)
         function exportToExcel() {
             const selectedMonth = document.getElementById('selected-month').value;
             const selectedUser = document.getElementById('filter-user').value;
@@ -1361,27 +1446,47 @@
             });
 
             if (tableFiltered.length === 0) {
-                alert("Não há dados na tabela para exportar.");
+                openReplicateInfoModal("Aviso", "Não há lançamentos visualizados para exportar na data selecionada.", true);
                 return;
             }
 
-            // Mapear registros para formato amigável de planilha
+            // Mapear registros formatando dados e valores
             const excelData = tableFiltered.map(t => ({
-                "Data": formatDateBR(t.date),
-                "Descrição": t.desc,
-                "Classificação": t.category,
-                "Método": t.method,
-                "Usuário": t.user,
-                "Tipo": t.type,
-                "Valor (R$)": t.amount
+                "DATA": formatDateBR(t.date),
+                "DESCRIÇÃO": t.desc,
+                "CLASSIFICAÇÃO": t.category,
+                "MÉTODO DE PAGAMENTO": t.method,
+                "USUÁRIO": t.user,
+                "TIPO DE OPERAÇÃO": t.type,
+                "VALOR (R$)": t.amount
             }));
 
-            // Gerar a planilha Excel usando a biblioteca SheetJS
             const worksheet = XLSX.utils.json_to_sheet(excelData);
+
+            // Ajustar largura automática de colunas para melhor estética
+            const colWidths = [
+                { wch: 12 }, // Data
+                { wch: 35 }, // Descrição
+                { wch: 22 }, // Classificação
+                { wch: 22 }, // Método
+                { wch: 12 }, // Usuário
+                { wch: 18 }, // Tipo
+                { wch: 15 }  // Valor
+            ];
+            worksheet['!cols'] = colWidths;
+
+            // Formatação de números na coluna de valor (Coluna G)
+            const range = XLSX.utils.decode_range(worksheet['!ref']);
+            for (let R = range.s.r + 1; R <= range.e.r; ++R) {
+                const cellAddress = XLSX.utils.encode_cell({ r: R, c: 6 });
+                if (worksheet[cellAddress]) {
+                    worksheet[cellAddress].z = '"R$"#,##0.00;[Red]"-R$"#,##0.00';
+                }
+            }
+
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, "Lançamentos");
 
-            // Baixar o arquivo
             const fileName = `Financas_${selectedMonth}_${selectedUser}.xlsx`;
             XLSX.writeFile(workbook, fileName);
         }
@@ -1445,7 +1550,6 @@
                             ${(t.type === 'ENTRADA' || t.type === 'RESGATE') ? '+' : '-'} ${formatCurrency(t.amount)}
                         </td>
                         <td class="p-3 text-center space-x-2">
-                            <!-- BOTÃO REPLICAR (NOVO ITEM 1) -->
                             <button onclick="replicateEntryToNextMonth('${t.id}')" title="Replicar para o mês seguinte" class="text-emerald-600 hover:text-emerald-800 dark:text-emerald-400 p-1"><i class="fa-solid fa-clone"></i></button>
                             <button onclick="openModal('${t.id}')" title="Editar" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 p-1"><i class="fa-solid fa-pen"></i></button>
                             <button onclick="deleteEntry('${t.id}')" title="Excluir" class="text-rose-600 hover:text-rose-800 dark:text-rose-400 p-1"><i class="fa-solid fa-trash"></i></button>
