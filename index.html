@@ -10,6 +10,8 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SheetJS (XLSX) para Exportação em Excel -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     
     <!-- Firebase SDK (Compat Version) -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -109,7 +111,6 @@
             <!-- CONTROLES SUPERIORES -->
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
                 <div>
-                    <!-- TÍTULO ALTERADO -->
                     <h1 class="text-2xl font-bold text-slate-900 dark:text-white" id="page-title">Meu Financeiro</h1>
                     <p class="text-sm font-semibold text-emerald-600 dark:text-emerald-400 mt-0.5 capitalize" id="formatted-selected-month">Janeiro de 2026</p>
                 </div>
@@ -124,6 +125,12 @@
                         <option value="MATHEUS">MATHEUS</option>
                         <option value="RHAUANE">RHAUANE</option>
                     </select>
+
+                    <!-- Botão Exportar Excel (NOVO ITEM 4) -->
+                    <button onclick="exportToExcel()" title="Exportar para Excel" class="bg-emerald-700 hover:bg-emerald-600 text-white text-sm font-semibold px-3 py-2.5 rounded-lg flex items-center gap-2 transition shadow-md">
+                        <i class="fa-solid fa-file-excel text-base"></i>
+                        <span class="hidden md:inline">Exportar</span>
+                    </button>
 
                     <!-- Botão Novo Lançamento -->
                     <button onclick="openModal()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold px-4 py-2.5 rounded-lg flex items-center gap-2 transition shadow-lg shadow-emerald-600/20">
@@ -168,23 +175,24 @@
                         <table class="w-full text-left text-sm text-slate-700 dark:text-slate-300">
                             <thead class="bg-sky-100/60 dark:bg-slate-900/70 text-slate-700 dark:text-slate-400 uppercase text-xs">
                                 <tr>
-                                    <!-- FILTROS MULTI-SELEÇÃO COM CHECKBOXES -->
+                                    <!-- FILTRO DATA (COM BUSCA TEXTUAL E MARCAR TODOS) -->
                                     <th class="p-3 relative">
                                         <div class="flex items-center justify-between gap-1">
                                             <span>Data</span>
                                             <button onclick="toggleFilterMenu('date')" class="text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 p-1"><i class="fa-solid fa-chevron-down text-[10px]"></i></button>
                                         </div>
-                                        <div id="filter-menu-date" class="hidden absolute top-full left-0 mt-1 bg-white dark:bg-slate-800 border border-sky-200 dark:border-slate-700 rounded-lg shadow-xl p-2 z-20 min-w-[170px] normal-case font-normal text-xs space-y-1 max-h-48 overflow-y-auto">
+                                        <div id="filter-menu-date" class="hidden absolute top-full left-0 mt-1 bg-white dark:bg-slate-800 border border-sky-200 dark:border-slate-700 rounded-lg shadow-xl p-2 z-20 min-w-[200px] normal-case font-normal text-xs space-y-1 max-h-60 overflow-y-auto">
                                             <!-- Populado via JS -->
                                         </div>
                                     </th>
 
+                                    <!-- FILTRO DESCRIÇÃO (COM BUSCA TEXTUAL E MARCAR TODOS) -->
                                     <th class="p-3 relative">
                                         <div class="flex items-center justify-between gap-1">
                                             <span>Descrição</span>
                                             <button onclick="toggleFilterMenu('desc')" class="text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 p-1"><i class="fa-solid fa-chevron-down text-[10px]"></i></button>
                                         </div>
-                                        <div id="filter-menu-desc" class="hidden absolute top-full left-0 mt-1 bg-white dark:bg-slate-800 border border-sky-200 dark:border-slate-700 rounded-lg shadow-xl p-2 z-20 min-w-[200px] normal-case font-normal text-xs space-y-1 max-h-48 overflow-y-auto">
+                                        <div id="filter-menu-desc" class="hidden absolute top-full left-0 mt-1 bg-white dark:bg-slate-800 border border-sky-200 dark:border-slate-700 rounded-lg shadow-xl p-2 z-20 min-w-[220px] normal-case font-normal text-xs space-y-1 max-h-60 overflow-y-auto">
                                             <!-- Populado via JS -->
                                         </div>
                                     </th>
@@ -194,7 +202,7 @@
                                             <span>Classificação</span>
                                             <button onclick="toggleFilterMenu('category')" class="text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 p-1"><i class="fa-solid fa-chevron-down text-[10px]"></i></button>
                                         </div>
-                                        <div id="filter-menu-category" class="hidden absolute top-full left-0 mt-1 bg-white dark:bg-slate-800 border border-sky-200 dark:border-slate-700 rounded-lg shadow-xl p-2 z-20 min-w-[180px] normal-case font-normal text-xs space-y-1 max-h-48 overflow-y-auto">
+                                        <div id="filter-menu-category" class="hidden absolute top-full left-0 mt-1 bg-white dark:bg-slate-800 border border-sky-200 dark:border-slate-700 rounded-lg shadow-xl p-2 z-20 min-w-[180px] normal-case font-normal text-xs space-y-1 max-h-60 overflow-y-auto">
                                             <!-- Populado via JS -->
                                         </div>
                                     </th>
@@ -204,7 +212,7 @@
                                             <span>Método</span>
                                             <button onclick="toggleFilterMenu('method')" class="text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 p-1"><i class="fa-solid fa-chevron-down text-[10px]"></i></button>
                                         </div>
-                                        <div id="filter-menu-method" class="hidden absolute top-full left-0 mt-1 bg-white dark:bg-slate-800 border border-sky-200 dark:border-slate-700 rounded-lg shadow-xl p-2 z-20 min-w-[150px] normal-case font-normal text-xs space-y-1 max-h-48 overflow-y-auto">
+                                        <div id="filter-menu-method" class="hidden absolute top-full left-0 mt-1 bg-white dark:bg-slate-800 border border-sky-200 dark:border-slate-700 rounded-lg shadow-xl p-2 z-20 min-w-[150px] normal-case font-normal text-xs space-y-1 max-h-60 overflow-y-auto">
                                             <!-- Populado via JS -->
                                         </div>
                                     </th>
@@ -214,7 +222,7 @@
                                             <span>Usuário</span>
                                             <button onclick="toggleFilterMenu('user')" class="text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 p-1"><i class="fa-solid fa-chevron-down text-[10px]"></i></button>
                                         </div>
-                                        <div id="filter-menu-user" class="hidden absolute top-full left-0 mt-1 bg-white dark:bg-slate-800 border border-sky-200 dark:border-slate-700 rounded-lg shadow-xl p-2 z-20 min-w-[140px] normal-case font-normal text-xs space-y-1 max-h-48 overflow-y-auto">
+                                        <div id="filter-menu-user" class="hidden absolute top-full left-0 mt-1 bg-white dark:bg-slate-800 border border-sky-200 dark:border-slate-700 rounded-lg shadow-xl p-2 z-20 min-w-[140px] normal-case font-normal text-xs space-y-1 max-h-60 overflow-y-auto">
                                             <!-- Populado via JS -->
                                         </div>
                                     </th>
@@ -224,7 +232,7 @@
                                             <span>Valor</span>
                                             <button onclick="toggleFilterMenu('amount')" class="text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 p-1"><i class="fa-solid fa-chevron-down text-[10px]"></i></button>
                                         </div>
-                                        <div id="filter-menu-amount" class="hidden absolute top-full right-0 mt-1 bg-white dark:bg-slate-800 border border-sky-200 dark:border-slate-700 rounded-lg shadow-xl p-2 z-20 min-w-[160px] normal-case font-normal text-xs space-y-1 max-h-48 overflow-y-auto">
+                                        <div id="filter-menu-amount" class="hidden absolute top-full right-0 mt-1 bg-white dark:bg-slate-800 border border-sky-200 dark:border-slate-700 rounded-lg shadow-xl p-2 z-20 min-w-[160px] normal-case font-normal text-xs space-y-1 max-h-60 overflow-y-auto">
                                             <!-- Populado via JS -->
                                         </div>
                                     </th>
@@ -403,7 +411,7 @@
         </div>
     </div>
 
-    <!-- MODAL CUSTOMIZADO DE CONFIRMAÇÃO DE EXCLUSÃO SIMPLES (NOVO ITEM 4) -->
+    <!-- MODAL CUSTOMIZADO DE CONFIRMAÇÃO DE EXCLUSÃO SIMPLES -->
     <div id="simple-delete-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-slate-800 border border-sky-200 dark:border-slate-700 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl text-center">
             <div class="w-12 h-12 bg-rose-500/10 text-rose-500 rounded-full flex items-center justify-center mx-auto text-xl">
@@ -427,7 +435,7 @@
         </div>
     </div>
 
-    <!-- MODAL INFORMATIVO DE SALDO INSUFICIENTE EM RESGATE CDB (NOVO ITEM 3) -->
+    <!-- MODAL INFORMATIVO DE SALDO INSUFICIENTE EM RESGATE CDB -->
     <div id="insufficient-funds-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-slate-800 border border-sky-200 dark:border-slate-700 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl text-center">
             <div class="w-12 h-12 bg-amber-500/10 text-amber-500 rounded-full flex items-center justify-center mx-auto text-xl">
@@ -592,6 +600,12 @@
             amount: []
         };
 
+        // PESQUISA TEXTUAL NOS MENUS DE FILTRO (NOVO ITEM 3)
+        let columnSearchTerms = {
+            date: '',
+            desc: ''
+        };
+
         function initFirebaseListeners() {
             if (!db) return;
 
@@ -673,7 +687,7 @@
         // MANIPULAÇÃO DA SELEÇÃO MÚLTIPLA NOS FILTROS DE COLUNA
         function handleCheckboxFilterChange(columnKey) {
             const container = document.getElementById(`filter-menu-${columnKey}`);
-            const checkedBoxes = container.querySelectorAll('input[type="checkbox"]:checked');
+            const checkedBoxes = container.querySelectorAll('.filter-item-cb:checked');
             columnFilters[columnKey] = Array.from(checkedBoxes).map(cb => cb.value);
 
             const hasActiveFilter = Object.values(columnFilters).some(arr => arr.length > 0);
@@ -687,8 +701,32 @@
             updateViews();
         }
 
+        // MARCAR/DESMARCAR TODOS EM UM FILTRO (NOVO ITEM 2)
+        function toggleSelectAllFilter(columnKey, isChecked) {
+            const container = document.getElementById(`filter-menu-${columnKey}`);
+            const visibleCheckboxes = container.querySelectorAll('.filter-item-cb');
+            visibleCheckboxes.forEach(cb => cb.checked = isChecked);
+            handleCheckboxFilterChange(columnKey);
+        }
+
+        // PESQUISAR OPÇÕES NO MENU DE FILTRO (NOVO ITEM 3)
+        function handleFilterSearchInput(columnKey, value) {
+            columnSearchTerms[columnKey] = value.toLowerCase().trim();
+            const selectedMonth = document.getElementById('selected-month').value;
+            const selectedUser = document.getElementById('filter-user').value;
+
+            const baseMonthFiltered = transactions.filter(t => {
+                const matchMonth = t.monthRef === selectedMonth;
+                const matchUser = selectedUser === 'ALL' || t.user === selectedUser;
+                return matchMonth && matchUser;
+            });
+
+            populateFilterDropdowns(baseMonthFiltered);
+        }
+
         function clearTableFilters() {
             columnFilters = { date: [], desc: [], category: [], method: [], user: [], amount: [] };
+            columnSearchTerms = { date: '', desc: '' };
             const keys = ['date', 'desc', 'category', 'method', 'user', 'amount'];
             keys.forEach(k => {
                 const container = document.getElementById(`filter-menu-${k}`);
@@ -959,7 +997,7 @@
             return `${yyyy}-${mm}`;
         }
 
-        // CÁLCULO DE SALDO ACUMULADO CDB PARA VALIDAÇÃO DE RESGATE (NOVO ITEM 3)
+        // CÁLCULO DE SALDO ACUMULADO CDB PARA VALIDAÇÃO DE RESGATE
         function getCdbBalanceAvailable(user, targetMonthRef, excludeEditId = null) {
             const initialAmount = parseFloat(document.getElementById('cdb-initial-amount').value) || 0;
             const initialDateStr = document.getElementById('cdb-initial-date').value;
@@ -1005,7 +1043,7 @@
 
             const targetMonthRef = calculateMonthRef(dateStr, method, currentUser, cardId);
 
-            // VALIDAÇÃO DE RESGATE CDB (NOVO ITEM 3)
+            // VALIDAÇÃO DE RESGATE CDB
             if (type === 'RESGATE') {
                 const available = getCdbBalanceAvailable(currentUser, targetMonthRef, editId);
                 if (rawAmount > available) {
@@ -1095,7 +1133,75 @@
             closeModal();
         }
 
-        // LÓGICA DE EXCLUSÃO DE LANÇAMENTOS E MODAIS (ITEM 4 ATUALIZADO)
+        // REPLICAR LANÇAMENTO PARA O MÊS SUBSEQUENTE (NOVO ITEM 1)
+        async function replicateEntryToNextMonth(id) {
+            const item = transactions.find(t => String(t.id) === String(id));
+            if (!item) return;
+
+            // Calcular a mesma data no mês seguinte
+            const dateParts = item.date.split('-');
+            const origYear = parseInt(dateParts[0]);
+            const origMonth = parseInt(dateParts[1]); // 1-12
+            const origDay = parseInt(dateParts[2]);
+
+            // Mês seguinte em JS (Month index 0-11)
+            let targetDateObj = new Date(origYear, origMonth, origDay);
+            
+            // Garantir ajustamento caso o dia ultrapasse os dias do mês (ex: 31 de janeiro -> final de fevereiro)
+            if (targetDateObj.getDate() !== origDay) {
+                targetDateObj.setDate(0); // Último dia do mês correto
+            }
+
+            const yyyy = targetDateObj.getFullYear();
+            const mm = String(targetDateObj.getMonth() + 1).padStart(2, '0');
+            const dd = String(targetDateObj.getDate()).padStart(2, '0');
+            const newDateStr = `${yyyy}-${mm}-${dd}`;
+
+            const newMonthRef = calculateMonthRef(newDateStr, item.method, item.user, item.cardId || null);
+
+            // Se a replicação for um resgate de CDB, validar saldo disponível no mês futuro
+            if (item.type === 'RESGATE') {
+                const available = getCdbBalanceAvailable(item.user, newMonthRef);
+                if (item.amount > available) {
+                    openInsufficientFundsModal(available);
+                    return;
+                }
+            }
+
+            // Remover indicação de parcelamento se houver na descrição (ex: "(1/12)")
+            let cleanDesc = item.desc.replace(/\s*\(\d+\/\d+\)/g, '');
+
+            if (db) {
+                await db.collection('transactions').add({
+                    user: item.user,
+                    type: item.type,
+                    category: item.category,
+                    desc: cleanDesc,
+                    amount: item.amount,
+                    date: newDateStr,
+                    method: item.method,
+                    cardId: item.cardId || null,
+                    monthRef: newMonthRef,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            } else {
+                transactions.push({
+                    id: String(Date.now()),
+                    user: item.user,
+                    type: item.type,
+                    category: item.category,
+                    desc: cleanDesc,
+                    amount: item.amount,
+                    date: newDateStr,
+                    method: item.method,
+                    cardId: item.cardId || null,
+                    monthRef: newMonthRef
+                });
+                updateViews();
+            }
+        }
+
+        // LÓGICA DE EXCLUSÃO DE LANÇAMENTOS E MODAIS
         function deleteEntry(id) {
             const item = transactions.find(t => String(t.id) === String(id));
             if (!item) return;
@@ -1104,7 +1210,6 @@
                 itemToDeletePending = item;
                 document.getElementById('delete-modal').classList.remove('hidden');
             } else {
-                // MODAL CUSTOMIZADO PARA EXCLUSÃO SIMPLES (ITEM 4)
                 singleDeleteIdPending = item.id;
                 document.getElementById('simple-delete-modal').classList.remove('hidden');
             }
@@ -1170,7 +1275,7 @@
             return balance;
         }
 
-        // POPULAR DROPDOWNS COM CHECKBOXES PARA SELEÇÃO MÚLTIPLA
+        // POPULAR DROPDOWNS COM CHECKBOXES, OPÇÃO MARCAR TODOS E BUSCA TEXTUAL (ITENS 2 e 3)
         function populateFilterDropdowns(baseMonthFiltered) {
             const keys = ['date', 'desc', 'category', 'method', 'user', 'amount'];
             
@@ -1188,24 +1293,97 @@
                     else if (k === 'amount') uniqueValues.add(formatCurrency(t.amount));
                 });
 
-                const sortedVals = Array.from(uniqueValues).sort();
+                let sortedVals = Array.from(uniqueValues).sort();
+
+                // Filtragem pela caixa de busca (se houver para essa coluna)
+                if (columnSearchTerms[k]) {
+                    sortedVals = sortedVals.filter(v => v.toLowerCase().includes(columnSearchTerms[k]));
+                }
+
                 container.innerHTML = '';
 
+                // 1. Campo de Busca Textual (Apenas para Data e Descrição - ITEM 3)
+                if (k === 'date' || k === 'desc') {
+                    container.innerHTML += `
+                        <div class="mb-2 pb-1 border-b border-sky-200 dark:border-slate-700">
+                            <input type="text" placeholder="Buscar..." value="${columnSearchTerms[k] || ''}" oninput="handleFilterSearchInput('${k}', this.value)" class="w-full bg-sky-50 dark:bg-slate-900 border border-sky-200 dark:border-slate-700 rounded px-2 py-1 text-xs outline-none focus:border-emerald-500 text-slate-900 dark:text-white">
+                        </div>
+                    `;
+                }
+
                 if (sortedVals.length === 0) {
-                    container.innerHTML = `<span class="text-slate-400 block py-1">Sem opções</span>`;
+                    container.innerHTML += `<span class="text-slate-400 block py-1">Sem opções</span>`;
                     return;
                 }
 
+                // 2. Opção "Marcar Todos" (NOVO ITEM 2)
+                const allSelected = sortedVals.length > 0 && sortedVals.every(v => columnFilters[k].includes(v));
+                container.innerHTML += `
+                    <label class="flex items-center gap-2 px-1 py-1 hover:bg-sky-100 dark:hover:bg-slate-700/60 rounded cursor-pointer font-bold border-b border-sky-100 dark:border-slate-700/50 text-slate-900 dark:text-white mb-1">
+                        <input type="checkbox" ${allSelected ? 'checked' : ''} onchange="toggleSelectAllFilter('${k}', this.checked)" class="rounded accent-emerald-600">
+                        <span>(Marcar todos)</span>
+                    </label>
+                `;
+
+                // 3. Lista de Checkboxes individuais
                 sortedVals.forEach(v => {
                     const isChecked = columnFilters[k].includes(v) ? 'checked' : '';
                     container.innerHTML += `
                         <label class="flex items-center gap-2 px-1 py-1 hover:bg-sky-100 dark:hover:bg-slate-700/60 rounded cursor-pointer text-slate-800 dark:text-slate-200">
-                            <input type="checkbox" value="${v}" ${isChecked} onchange="handleCheckboxFilterChange('${k}')" class="rounded accent-emerald-600">
+                            <input type="checkbox" value="${v}" ${isChecked} onchange="handleCheckboxFilterChange('${k}')" class="filter-item-cb rounded accent-emerald-600">
                             <span class="truncate">${v}</span>
                         </label>
                     `;
                 });
             });
+        }
+
+        // EXPORTAR PARA EXCEL (.XLSX - NOVO ITEM 4)
+        function exportToExcel() {
+            const selectedMonth = document.getElementById('selected-month').value;
+            const selectedUser = document.getElementById('filter-user').value;
+
+            // Filtrar os dados que estão ativos na visualização
+            const baseMonthFiltered = transactions.filter(t => {
+                const matchMonth = t.monthRef === selectedMonth;
+                const matchUser = selectedUser === 'ALL' || t.user === selectedUser;
+                return matchMonth && matchUser;
+            });
+
+            const tableFiltered = baseMonthFiltered.filter(t => {
+                if (columnFilters.date.length > 0 && !columnFilters.date.includes(formatDateBR(t.date))) return false;
+                if (columnFilters.desc.length > 0 && !columnFilters.desc.includes(t.desc)) return false;
+                if (columnFilters.category.length > 0 && !columnFilters.category.includes(t.category)) return false;
+                if (columnFilters.method.length > 0 && !columnFilters.method.includes(t.method)) return false;
+                if (columnFilters.user.length > 0 && !columnFilters.user.includes(t.user)) return false;
+                if (columnFilters.amount.length > 0 && !columnFilters.amount.includes(formatCurrency(t.amount))) return false;
+                return true;
+            });
+
+            if (tableFiltered.length === 0) {
+                alert("Não há dados na tabela para exportar.");
+                return;
+            }
+
+            // Mapear registros para formato amigável de planilha
+            const excelData = tableFiltered.map(t => ({
+                "Data": formatDateBR(t.date),
+                "Descrição": t.desc,
+                "Classificação": t.category,
+                "Método": t.method,
+                "Usuário": t.user,
+                "Tipo": t.type,
+                "Valor (R$)": t.amount
+            }));
+
+            // Gerar a planilha Excel usando a biblioteca SheetJS
+            const worksheet = XLSX.utils.json_to_sheet(excelData);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Lançamentos");
+
+            // Baixar o arquivo
+            const fileName = `Financas_${selectedMonth}_${selectedUser}.xlsx`;
+            XLSX.writeFile(workbook, fileName);
         }
 
         // ATUALIZAÇÃO DA TELA E CÁLCULO DINÂMICO
@@ -1267,8 +1445,10 @@
                             ${(t.type === 'ENTRADA' || t.type === 'RESGATE') ? '+' : '-'} ${formatCurrency(t.amount)}
                         </td>
                         <td class="p-3 text-center space-x-2">
-                            <button onclick="openModal('${t.id}')" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 p-1"><i class="fa-solid fa-pen"></i></button>
-                            <button onclick="deleteEntry('${t.id}')" class="text-rose-600 hover:text-rose-800 dark:text-rose-400 p-1"><i class="fa-solid fa-trash"></i></button>
+                            <!-- BOTÃO REPLICAR (NOVO ITEM 1) -->
+                            <button onclick="replicateEntryToNextMonth('${t.id}')" title="Replicar para o mês seguinte" class="text-emerald-600 hover:text-emerald-800 dark:text-emerald-400 p-1"><i class="fa-solid fa-clone"></i></button>
+                            <button onclick="openModal('${t.id}')" title="Editar" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 p-1"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteEntry('${t.id}')" title="Excluir" class="text-rose-600 hover:text-rose-800 dark:text-rose-400 p-1"><i class="fa-solid fa-trash"></i></button>
                         </td>
                     </tr>
                 `;
@@ -1323,7 +1503,7 @@
             monthsList.forEach(mStr => {
                 const mTx = transactions.filter(t => t.monthRef === mStr && (selectedUser === 'ALL' || t.user === selectedUser));
                 
-                // ALTERAÇÃO DO ITEM 2: APORTES E RESGATES CDB REMOVIDOS DA LINHA DO TEMPO
+                // APORTES E RESGATES CDB EXCLUÍDOS DA LINHA DO TEMPO
                 const g = mTx.filter(t => t.type === 'ENTRADA').reduce((acc, t) => acc + t.amount, 0);
                 const d = mTx.filter(t => t.type === 'SAIDA').reduce((acc, t) => acc + t.amount, 0);
                 
