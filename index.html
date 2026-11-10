@@ -98,7 +98,7 @@
                         <i class="fa-solid fa-credit-card w-5"></i> Meus Cartões
                     </button>
 
-                    <!-- BOTÃO EXPORTAR EXCEL EM TOM DE AZUL (CORREÇÃO ITEM 2) -->
+                    <!-- BOTÃO EXPORTAR EXCEL EM TOM DE AZUL -->
                     <button onclick="exportToExcel()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sky-700 dark:text-sky-400 hover:bg-sky-300/40 dark:hover:bg-sky-900/40 text-left transition">
                         <i class="fa-solid fa-file-excel w-5 text-sky-600 dark:text-sky-400"></i> Exportar Mês (.xlsx)
                     </button>
@@ -180,7 +180,7 @@
                                             <span>Data</span>
                                             <button onclick="toggleFilterMenu('date')" class="text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 p-1"><i class="fa-solid fa-chevron-down text-[10px]"></i></button>
                                         </div>
-                                        <div id="filter-menu-date" class="hidden absolute top-full left-0 mt-1 bg-white dark:bg-slate-800 border border-sky-200 dark:border-slate-700 rounded-lg shadow-xl p-2 z-20 min-w-[200px] normal-case font-normal text-xs space-y-1 max-h-60 overflow-y-auto">
+                                        <div id="filter-menu-date" class="hidden absolute top-full left-0 mt-1 bg-white dark:bg-slate-800 border border-sky-200 dark:border-slate-700 rounded-lg shadow-xl p-2.5 z-20 min-w-[210px] normal-case font-normal text-xs space-y-1 max-h-64 overflow-y-auto">
                                             <!-- Populado via JS -->
                                         </div>
                                     </th>
@@ -191,7 +191,7 @@
                                             <span>Descrição</span>
                                             <button onclick="toggleFilterMenu('desc')" class="text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 p-1"><i class="fa-solid fa-chevron-down text-[10px]"></i></button>
                                         </div>
-                                        <div id="filter-menu-desc" class="hidden absolute top-full left-0 mt-1 bg-white dark:bg-slate-800 border border-sky-200 dark:border-slate-700 rounded-lg shadow-xl p-2 z-20 min-w-[220px] normal-case font-normal text-xs space-y-1 max-h-60 overflow-y-auto">
+                                        <div id="filter-menu-desc" class="hidden absolute top-full left-0 mt-1 bg-white dark:bg-slate-800 border border-sky-200 dark:border-slate-700 rounded-lg shadow-xl p-2.5 z-20 min-w-[230px] normal-case font-normal text-xs space-y-1 max-h-64 overflow-y-auto">
                                             <!-- Populado via JS -->
                                         </div>
                                     </th>
@@ -226,13 +226,13 @@
                                         </div>
                                     </th>
 
-                                    <!-- FILTRO VALOR (COM BUSCA TEXTUAL/NUMÉRICA - CORREÇÃO ITEM 1) -->
+                                    <!-- FILTRO VALOR -->
                                     <th class="p-3 text-right relative">
                                         <div class="flex items-center justify-end gap-1">
                                             <span>Valor</span>
                                             <button onclick="toggleFilterMenu('amount')" class="text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 p-1"><i class="fa-solid fa-chevron-down text-[10px]"></i></button>
                                         </div>
-                                        <div id="filter-menu-amount" class="hidden absolute top-full right-0 mt-1 bg-white dark:bg-slate-800 border border-sky-200 dark:border-slate-700 rounded-lg shadow-xl p-2 z-20 min-w-[180px] normal-case font-normal text-xs space-y-1 max-h-60 overflow-y-auto">
+                                        <div id="filter-menu-amount" class="hidden absolute top-full right-0 mt-1 bg-white dark:bg-slate-800 border border-sky-200 dark:border-slate-700 rounded-lg shadow-xl p-2.5 z-20 min-w-[190px] normal-case font-normal text-xs space-y-1 max-h-64 overflow-y-auto">
                                             <!-- Populado via JS -->
                                         </div>
                                     </th>
@@ -253,7 +253,7 @@
                         </h4>
                         <div class="bg-sky-100/70 dark:bg-slate-900/50 p-5 rounded-xl border border-sky-200/80 dark:border-slate-700 space-y-3 w-full text-sm">
                             <div class="flex justify-between items-center text-emerald-600 dark:text-emerald-400">
-                                <span>(+) Total de Ganhos / Entradas</span>
+                                <span>(+) Total de Ganhos / Entradas (inc. Resgates)</span>
                                 <span class="font-bold" id="dre-calc-ganhos">R$ 0,00</span>
                             </div>
                             <div class="flex justify-between items-center text-amber-600 dark:text-amber-400">
@@ -267,6 +267,11 @@
                             <div class="flex justify-between items-center text-rose-600 dark:text-rose-400">
                                 <span>(-) Despesas Não Essenciais</span>
                                 <span class="font-bold" id="dre-calc-nao-essenciais">R$ 0,00</span>
+                            </div>
+                            <!-- APORTES EM INVESTIMENTOS AGORA CONTABILIZADOS NAS SAÍDAS (ITEM 1) -->
+                            <div class="flex justify-between items-center text-indigo-600 dark:text-indigo-400">
+                                <span>(-) Aportes em Investimentos (CDB)</span>
+                                <span class="font-bold" id="dre-calc-aportes">R$ 0,00</span>
                             </div>
                             <div class="flex justify-between items-center pt-2 border-t border-sky-200 dark:border-slate-800 font-bold text-slate-900 dark:text-white text-base">
                                 <span>(=) Resultado Líquido do Mês</span>
@@ -621,7 +626,7 @@
             amount: []
         };
 
-        // PESQUISA TEXTUAL NOS MENUS DE FILTRO (INCLUINDO A COLUNA VALOR - CORREÇÃO ITEM 1)
+        // PESQUISA TEXTUAL NOS MENUS DE FILTRO
         let columnSearchTerms = {
             date: '',
             desc: '',
@@ -1349,20 +1354,20 @@
             }
         }
 
+        // CÁLCULO DE SALDO MENSAL ANTERIOR ACUMULADO (Aportes contabilizados nas saídas e Resgates nas entradas)
         function getPreviousAccumulatedBalance(targetMonthStr, selectedUser) {
             let balance = 0;
             transactions.forEach(t => {
                 if (selectedUser !== 'ALL' && t.user !== selectedUser) return;
                 if (t.monthRef < targetMonthStr) {
                     if (t.type === 'ENTRADA' || t.type === 'RESGATE') balance += t.amount;
-                    if (t.type === 'SAIDA') balance -= t.amount;
-                    if (t.type === 'INVESTIMENTO') balance -= t.amount;
+                    if (t.type === 'SAIDA' || t.type === 'INVESTIMENTO') balance -= t.amount;
                 }
             });
             return balance;
         }
 
-        // POPULAR DROPDOWNS COM CHECKBOXES, OPÇÃO MARCAR TODOS E BUSCA TEXTUAL (INCLUINDO COLUNA VALOR)
+        // POPULAR DROPDOWNS COM CHECKBOXES, OPÇÃO MARCAR TODOS E BUSCA TEXTUAL (COM DESIGN DE INPUT EXPANDIDO E ARREDONDADO - ITEM 2)
         function populateFilterDropdowns(baseMonthFiltered) {
             const keys = ['date', 'desc', 'category', 'method', 'user', 'amount'];
             
@@ -1382,31 +1387,30 @@
 
                 let sortedVals = Array.from(uniqueValues).sort();
 
-                // Filtragem pela caixa de busca (suportada agora em Data, Descrição e Valor - CORREÇÃO ITEM 1)
                 if (columnSearchTerms[k]) {
                     sortedVals = sortedVals.filter(v => v.toLowerCase().includes(columnSearchTerms[k]));
                 }
 
                 container.innerHTML = '';
 
-                // 1. Campo de Busca Textual (Data, Descrição e Valor)
+                // 1. Campo de Busca Textual Amigável, Arredondado e Maior (ITEM 2)
                 if (k === 'date' || k === 'desc' || k === 'amount') {
                     container.innerHTML += `
-                        <div class="mb-2 pb-1 border-b border-sky-200 dark:border-slate-700">
-                            <input type="text" id="search-input-${k}" placeholder="Buscar..." value="${columnSearchTerms[k] || ''}" oninput="handleFilterSearchInput('${k}', this)" class="w-full bg-sky-50 dark:bg-slate-900 border border-sky-200 dark:border-slate-700 rounded px-2 py-1 text-xs outline-none focus:border-emerald-500 text-slate-900 dark:text-white">
+                        <div class="mb-2.5 pb-2 border-b border-sky-200 dark:border-slate-700">
+                            <input type="text" id="search-input-${k}" placeholder="Buscar..." value="${columnSearchTerms[k] || ''}" oninput="handleFilterSearchInput('${k}', this)" class="w-full bg-sky-50 dark:bg-slate-900 border border-sky-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 text-slate-900 dark:text-white transition shadow-sm">
                         </div>
                     `;
                 }
 
                 if (sortedVals.length === 0) {
-                    container.innerHTML += `<span class="text-slate-400 block py-1">Sem opções</span>`;
+                    container.innerHTML += `<span class="text-slate-400 block py-1.5 px-1">Sem opções</span>`;
                     return;
                 }
 
                 // 2. Opção "Marcar Todos"
                 const allSelected = sortedVals.length > 0 && sortedVals.every(v => columnFilters[k].includes(v));
                 container.innerHTML += `
-                    <label class="flex items-center gap-2 px-1 py-1 hover:bg-sky-100 dark:hover:bg-slate-700/60 rounded cursor-pointer font-bold border-b border-sky-100 dark:border-slate-700/50 text-slate-900 dark:text-white mb-1">
+                    <label class="flex items-center gap-2 px-1.5 py-1.5 hover:bg-sky-100 dark:hover:bg-slate-700/60 rounded-md cursor-pointer font-bold border-b border-sky-100 dark:border-slate-700/50 text-slate-900 dark:text-white mb-1">
                         <input type="checkbox" ${allSelected ? 'checked' : ''} onchange="toggleSelectAllFilter('${k}', this.checked)" class="rounded accent-emerald-600">
                         <span>(Marcar todos)</span>
                     </label>
@@ -1416,7 +1420,7 @@
                 sortedVals.forEach(v => {
                     const isChecked = columnFilters[k].includes(v) ? 'checked' : '';
                     container.innerHTML += `
-                        <label class="flex items-center gap-2 px-1 py-1 hover:bg-sky-100 dark:hover:bg-slate-700/60 rounded cursor-pointer text-slate-800 dark:text-slate-200">
+                        <label class="flex items-center gap-2 px-1.5 py-1.5 hover:bg-sky-100 dark:hover:bg-slate-700/60 rounded-md cursor-pointer text-slate-800 dark:text-slate-200">
                             <input type="checkbox" value="${v}" ${isChecked} onchange="handleCheckboxFilterChange('${k}')" class="filter-item-cb rounded accent-emerald-600">
                             <span class="truncate">${v}</span>
                         </label>
@@ -1430,7 +1434,6 @@
             const selectedMonth = document.getElementById('selected-month').value;
             const selectedUser = document.getElementById('filter-user').value;
 
-            // Filtrar os dados que estão ativos na visualização
             const baseMonthFiltered = transactions.filter(t => {
                 const matchMonth = t.monthRef === selectedMonth;
                 const matchUser = selectedUser === 'ALL' || t.user === selectedUser;
@@ -1452,7 +1455,6 @@
                 return;
             }
 
-            // Mapear registros formatando dados e valores
             const excelData = tableFiltered.map(t => ({
                 "DATA": formatDateBR(t.date),
                 "DESCRIÇÃO": t.desc,
@@ -1465,19 +1467,17 @@
 
             const worksheet = XLSX.utils.json_to_sheet(excelData);
 
-            // Ajustar largura automática de colunas
             const colWidths = [
-                { wch: 12 }, // Data
-                { wch: 35 }, // Descrição
-                { wch: 22 }, // Classificação
-                { wch: 22 }, // Método
-                { wch: 12 }, // Usuário
-                { wch: 18 }, // Tipo
-                { wch: 15 }  // Valor
+                { wch: 12 },
+                { wch: 35 },
+                { wch: 22 },
+                { wch: 22 },
+                { wch: 12 },
+                { wch: 18 },
+                { wch: 15 }
             ];
             worksheet['!cols'] = colWidths;
 
-            // Formatação de números na coluna de valor (Coluna G)
             const range = XLSX.utils.decode_range(worksheet['!ref']);
             for (let R = range.s.r + 1; R <= range.e.r; ++R) {
                 const cellAddress = XLSX.utils.encode_cell({ r: R, c: 6 });
@@ -1493,7 +1493,7 @@
             XLSX.writeFile(workbook, fileName);
         }
 
-        // ATUALIZAÇÃO DA TELA E CÁLCULO DINÂMICO
+        // ATUALIZAÇÃO DA TELA E CÁLCULO DINÂMICO (COM APORTES AFETANDO A DRE MENSAL - ITEM 1)
         function updateViews() {
             const selectedMonth = document.getElementById('selected-month').value;
             const selectedUser = document.getElementById('filter-user').value;
@@ -1507,10 +1507,9 @@
                 return matchMonth && matchUser;
             });
 
-            // Atualizar listas dos menus de filtro das colunas
             populateFilterDropdowns(baseMonthFiltered);
 
-            // 2. Filtragem Secundária das Colunas com Seleção Múltipla
+            // 2. Filtragem Secundária das Colunas
             const tableFiltered = baseMonthFiltered.filter(t => {
                 if (columnFilters.date.length > 0 && !columnFilters.date.includes(formatDateBR(t.date))) return false;
                 if (columnFilters.desc.length > 0 && !columnFilters.desc.includes(t.desc)) return false;
@@ -1524,18 +1523,19 @@
             let totalEntradas = 0;
             let totalEssenciais = 0;
             let totalNaoEssenciais = 0;
+            let totalAportes = 0; // ITEM 1
 
             const tbody = document.getElementById('dre-table-body');
             tbody.innerHTML = '';
 
-            // Cálculos dinâmicos baseados no que ESTÁ SENDO VISUALIZADO (tableFiltered)
             tableFiltered.forEach(t => {
                 if (t.type === 'ENTRADA' || t.type === 'RESGATE') totalEntradas += t.amount;
                 if (t.type === 'SAIDA' && t.category === 'Saída Essencial') totalEssenciais += t.amount;
                 if (t.type === 'SAIDA' && t.category === 'Saída Não Essencial') totalNaoEssenciais += t.amount;
+                if (t.type === 'INVESTIMENTO') totalAportes += t.amount; // ITEM 1
 
                 const userBadgeClass = t.user === 'MATHEUS' ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20' : 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20';
-                const amountColor = (t.type === 'ENTRADA' || t.type === 'RESGATE') ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-800 dark:text-slate-200';
+                const amountColor = (t.type === 'ENTRADA' || t.type === 'RESGATE') ? 'text-emerald-600 dark:text-emerald-400' : (t.type === 'INVESTIMENTO' ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-800 dark:text-slate-200');
 
                 tbody.innerHTML += `
                     <tr class="hover:bg-sky-50 dark:hover:bg-slate-700/20 transition">
@@ -1560,22 +1560,27 @@
                 `;
             });
 
-            const resultadoLiquidoMes = totalEntradas - (totalEssenciais + totalNaoEssenciais);
+            // RESULTADO LÍQUIDO DO MÊS CONTABILIZANDO OS APORTES NAS DEDUÇÕES (ITEM 1)
+            const totalSaidasGerais = totalEssenciais + totalNaoEssenciais + totalAportes;
+            const resultadoLiquidoMes = totalEntradas - totalSaidasGerais;
+            
             const saldoAnterior = getPreviousAccumulatedBalance(selectedMonth, selectedUser);
             const saldoFinalAcumulado = saldoAnterior + resultadoLiquidoMes;
 
-            // Recálculo dinâmico dos KPIs e Fechamento do Mês
+            // Atualização dos KPIs
             document.getElementById('kpi-entradas').innerText = formatCurrency(totalEntradas);
             document.getElementById('kpi-essenciais').innerText = formatCurrency(totalEssenciais);
             document.getElementById('kpi-nao-essenciais').innerText = formatCurrency(totalNaoEssenciais);
             document.getElementById('kpi-resultado').innerText = formatCurrency(resultadoLiquidoMes);
             document.getElementById('kpi-resultado').className = `text-2xl font-bold mt-2 ${resultadoLiquidoMes >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-500'}`;
 
+            // Demonstrativo de Subtrações na DRE Mensal
             const subtotalAposEssenciais = totalEntradas - totalEssenciais;
             document.getElementById('dre-calc-ganhos').innerText = formatCurrency(totalEntradas);
             document.getElementById('dre-calc-essenciais').innerText = formatCurrency(totalEssenciais);
             document.getElementById('dre-calc-subtotal1').innerText = formatCurrency(subtotalAposEssenciais);
             document.getElementById('dre-calc-nao-essenciais').innerText = formatCurrency(totalNaoEssenciais);
+            document.getElementById('dre-calc-aportes').innerText = formatCurrency(totalAportes); // Exibe os aportes subtraídos
             document.getElementById('dre-calc-resultado').innerText = formatCurrency(resultadoLiquidoMes);
             document.getElementById('dre-calc-anterior').innerText = formatCurrency(saldoAnterior);
             document.getElementById('dre-calc-acumulado').innerText = formatCurrency(saldoFinalAcumulado);
@@ -1609,7 +1614,7 @@
             monthsList.forEach(mStr => {
                 const mTx = transactions.filter(t => t.monthRef === mStr && (selectedUser === 'ALL' || t.user === selectedUser));
                 
-                // APORTES E RESGATES CDB EXCLUÍDOS DA LINHA DO TEMPO
+                // LINHA DO TEMPO: APORTES E RESGATES CONTINUAM 100% EXCLUÍDOS DO GRÁFICO (ITEM 1)
                 const g = mTx.filter(t => t.type === 'ENTRADA').reduce((acc, t) => acc + t.amount, 0);
                 const d = mTx.filter(t => t.type === 'SAIDA').reduce((acc, t) => acc + t.amount, 0);
                 
